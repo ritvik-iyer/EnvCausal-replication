@@ -1,0 +1,26 @@
+---
+title: "156 Replication Project"
+author: "Samuel Gao"
+date: "9/28/2021"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+dat = read.csv("~/Documents/UC BERKELEY/STATISTICS/STAT 156/Final Project/EnvCausal-main/data/snapshot_data.csv")
+```
+
+```{r}
+summary(dat)
+```
+
+```{r}
+filter(dat, abs(dat$PRIM + dat$SEC + dat$TERT - dat$GDP) >1)
+```
+
+
+
+
