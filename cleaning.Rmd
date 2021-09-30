@@ -7,10 +7,59 @@ output: pdf_document
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+library(dplyr)
+```
+
+The following code is what I used to clean and analyze the data.
+
+```{r}
+dat = read.csv("~/Documents/UC BERKELEY/STATISTICS/STAT 156/Final Project/GitHub/EnvCausal-replication/snapshot_data.csv")
+```
+
+The following are premininary summaries of the data.
+
+```{r}
+summary(dat)
+```
+
+
+```{r}
+levels(dat$City) = c(levels(dat$City), "Xiamen", "Lhasa", "Urumqi", "Chongqing")
+dat$City[9] = "Xiamen"
+dat$City[14] = "Lhasa"
+dat$City[18] = "Urumqi"
+dat$City[21] = "Chongqing"
+```
+
+
+First sanity check is to see if the GDP numbers add up. GDP values from the primary sector, secondary sector, and tetritary sectors should add up to the total value of the GDP. 
+
+```{r}
+filter(dat, abs(dat$PRIM + dat$SEC + dat$TERT - dat$GDP) >1)
 ```
 
 ```{r}
-dat = read.csv("~/Documents/UC BERKELEY/STATISTICS/STAT 156/Final Project/EnvCausal-main/data/snapshot_data.csv")
+dat$SEC[dat$City == "Changchun"] = 2495.4
+dat$GDP[dat$City == "Xiamen"] = 5995.04
+dat$PRIM[dat$City == "Chongqing"] = 1551.42
+dat$GDP[dat$City == "Baoding"] = 3558
+dat$TERT[dat$City == "Huzhou"] = 1393.2
+
+filter(dat, abs(dat$PRIM + dat$SEC + dat$TERT - dat$GDP) >1)
+
+```
+
+```{r}
+dat$POP = dat$POP*10
+dat$GDP = dat$GDP/6.91/10
+dat$PRIM = dat$PRIM/6.91/10
+dat$SEC = dat$SEC/6.91/10
+dat$TERT = dat$TERT/6.91/10
+dat$GDPpc = dat$GDP/dat$POP*1000
+dat$Prim. = dat$PRIM/dat$GDP
+dat$Sec.= dat$SEC/dat$GDP
+dat$Tert. = dat$TERT/dat$GDP
+dat$POPDENS = dat$POP/dat$Area*1000
 ```
 
 ```{r}
@@ -18,9 +67,12 @@ summary(dat)
 ```
 
 ```{r}
-filter(dat, abs(dat$PRIM + dat$SEC + dat$TERT - dat$GDP) >1)
+envdat = read.csv("~/Documents/UC BERKELEY/STATISTICS/STAT 156/Final Project/EnvCausal-main/data/time_series/3_day_moving_average/df_m3.csv")
 ```
 
+```{r}
+summary(envdat)
+```
 
 
 
