@@ -21,7 +21,7 @@ The data used for the analysis of the paper includes macroeconomic and demograph
 
 # Section 3: Data Cleaning 
 
-For data cleaning, we obtained the datasets from the authors, compared them with the real data, and corrected mistakes. As the data were collected from hundreds of different sources, we decided that determining the accuracy of the features created by the authors was more important (and feasible) than re-constructing the data set from every source. As a result, we spent a larger amount of time on data quality checks. For instance, while calculating GDP, the total GDP should equal the combination of the primary, secondary and tertiary sectors. Tests were performed to examine if the above identity holds and mistakes were corrected to generate the proper numbers. In addition, certain columns of the summary statistics were expressed in different units and discrepancies were corrected. For example, the GDP data collected was quoted in RMB, while the summary statistics from the author used USD. Using an exchange rate from 2019 of 6.91 RMB to 1 USD, GDP figures were converted to the USD equivalency and summary statistics were reported using converted figures. Other data corrections involved proportion to percent conversions and per capita statistics being scaled correctly. 
+For data cleaning, we obtained the datasets from the authors, compared them with the real data, and corrected mistakes. As the data were collected from hundreds of different sources, we decided that determining the accuracy of the features created by the authors was more important (and feasible) than re-constructing the data set from every source. As a result, we spent a larger amount of time on data quality checks. For instance, while calculating GDP, the total GDP should equal the combination of the primary, secondary and tertiary sectors. Tests were performed to examine if the above identity holds and mistakes were corrected to generate the proper numbers. We found a total of 4 typos that were significant enough to need correction. The numbers were compared with the official government statistics to correct the typos. In addition, certain columns of the summary statistics were expressed in different units and discrepancies were corrected. For example, the GDP data collected was quoted in RMB, while the summary statistics from the author used USD. Using an exchange rate from 2019 of 6.91 RMB to 1 USD, GDP figures were converted to the USD equivalency and summary statistics were reported using converted figures. Other data corrections involved proportion to percent conversions and per capita statistics being scaled correctly. Lastly, the data were parsed into three clusters to represent the relative sizes of the cities. The first cluster is “Megacities” which includes some of the largest cities in China, while the second and third clusters are “Major Cities” and “Common Cities”, respectively. 
 
 # Section 4: Summary Statistics and Explanations 
 
@@ -58,23 +58,23 @@ We have placed the reproduced summary statistics figures in the Appendix. The su
 
 ## Figure 2: 3-Day Moving Average Factor Summary Statistics 
 \centering 
-\begin{tabular}{lrrrrrrr}
+\begin{tabular}{lrrrrrrrr}
 \toprule
-{} &    Mean &     SD &     Min &  25th \%ile &   Median &  75th \%ile &      Max \\
+{} &    Mean &     SD &     Min &  25th \%ile &   Median &  75th \%ile &      Max &    IQR \\
 \midrule
-\textbf{PM2.5 ($\mu$g/m3)             } &   46.67 &  31.34 &    3.67 &      27.33 &    39.67 &      55.67 &   349.00 \\
-\textbf{PM10 ($\mu$g/m3)              } &   70.27 &  38.73 &    6.33 &      42.67 &    63.67 &      89.33 &   378.00 \\
-\textbf{SO2 ($\mu$g/m3)               } &   10.33 &   7.41 &    1.67 &       6.00 &     8.00 &      12.33 &    92.00 \\
-\textbf{CO (mg/m3)                } &    0.81 &   0.35 &    0.20 &       0.60 &     0.73 &       0.93 &     4.50 \\
-\textbf{NO2 ($\mu$g/m3)               } &   25.26 &  11.17 &    2.67 &      16.67 &    24.00 &      32.00 &    87.00 \\
-\textbf{O3 ($\mu$g/m3)                } &   83.82 &  22.06 &    5.00 &      69.00 &    83.33 &      97.67 &   166.67 \\
-\textbf{Relative humidity (\%)     } &   71.23 &  18.20 &    8.00 &      60.33 &    74.67 &      85.33 &   100.00 \\
-\textbf{Atmospheric pressure (hpa)} &  991.77 &  50.30 &  644.33 &     984.00 &  1011.00 &    1018.67 &  1035.33 \\
-\textbf{Wind speed (m/s)          } &    2.23 &   1.31 &    0.10 &       1.40 &     1.90 &       2.97 &    11.47 \\
-\textbf{Average air temperature   } &    8.98 &   6.34 &  -22.00 &       5.00 &     9.17 &      13.17 &    27.67 \\
-\textbf{Degree of activeness      } &    3.59 &   1.34 &    0.31 &       2.42 &     3.78 &       4.68 &     8.81 \\
-\textbf{Morbidity rate            } &    0.02 &   0.11 &   -0.00 &      -0.00 &     0.00 &       0.00 &     3.21 \\
-\textbf{New confirmed cases       } &    6.17 &  34.26 &    0.00 &       0.00 &     0.00 &       2.00 &  1021.00 \\
+\textbf{PM2.5 ($\mu$g/m3)             } &   46.67 &  31.34 &    3.67 &      27.33 &    39.67 &      55.67 &   349.00 &  28.34 \\
+\textbf{PM10 ($\mu$g/m3)              } &   70.27 &  38.73 &    6.33 &      42.67 &    63.67 &      89.33 &   378.00 &  46.66 \\
+\textbf{SO2 ($\mu$g/m3)               } &   10.33 &   7.41 &    1.67 &       6.00 &     8.00 &      12.33 &    92.00 &   6.33 \\
+\textbf{CO (mg/m3)                } &    0.81 &   0.35 &    0.20 &       0.60 &     0.73 &       0.93 &     4.50 &   0.33 \\
+\textbf{NO2 ($\mu$g/m3)               } &   25.26 &  11.17 &    2.67 &      16.67 &    24.00 &      32.00 &    87.00 &  15.33 \\
+\textbf{O3 ($\mu$g/m3)                } &   83.82 &  22.06 &    5.00 &      69.00 &    83.33 &      97.67 &   166.67 &  28.67 \\
+\textbf{Relative humidity (\%)     } &   71.23 &  18.20 &    8.00 &      60.33 &    74.67 &      85.33 &   100.00 &  25.00 \\
+\textbf{Atmospheric pressure (hpa)} &  991.77 &  50.30 &  644.33 &     984.00 &  1011.00 &    1018.67 &  1035.33 &  34.67 \\
+\textbf{Wind speed (m/s)          } &    2.23 &   1.31 &    0.10 &       1.40 &     1.90 &       2.97 &    11.47 &   1.57 \\
+\textbf{Average air temperature   } &    8.98 &   6.34 &  -22.00 &       5.00 &     9.17 &      13.17 &    27.67 &   8.17 \\
+\textbf{Degree of activeness      } &    3.59 &   1.34 &    0.31 &       2.42 &     3.78 &       4.68 &     8.81 &   2.26 \\
+\textbf{Morbidity rate            } &    0.02 &   0.11 &   -0.00 &      -0.00 &     0.00 &       0.00 &     3.21 &   0.00 \\
+\textbf{New confirmed cases       } &    6.17 &  34.26 &    0.00 &       0.00 &     0.00 &       2.00 &  1021.00 &   2.00 \\
 \bottomrule
 \end{tabular}
 
@@ -258,6 +258,9 @@ summary_stats_snapshot
 # Read time series data set 
 time_series = pd.read_csv(time_series_path)
 
+# Read time series data set 
+time_series = pd.read_csv(time_series_path)
+
 # Rename features for clarity
 column_name_map_2 = {
                         'PM2.5':'PM2.5 (ug/m3)',
@@ -312,6 +315,10 @@ summary_stats_time_series.columns = ['Mean',
                          'Median',
                          '75th %ile',
                          'Max']
+
+# Add IQR
+summary_stats_time_series['IQR'] = summary_stats_time_series['75th %ile'] - summary_stats_time_series['25th %ile']
+
 
 # Display summary table 
 summary_stats_time_series
@@ -378,5 +385,3 @@ mean_feature_by_cluster
 
 ```{r ref.label=knitr::all_labels(), echo=TRUE, eval=FALSE}
 ```
-
-\newpage 
