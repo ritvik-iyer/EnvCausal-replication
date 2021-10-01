@@ -1,6 +1,6 @@
 ---
-title: "data-summary"
-author: "Ritvik Iyer"
+title: "Stat 156 Final Project Part 1: Paper Summary"
+author: "Ritvik Iyer and Samuel Gao"
 date: "9/29/2021"
 output: pdf_document
 header-includes:
@@ -11,16 +11,26 @@ header-includes:
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
+# Section 1: Research Question and Conclusion 
 
-## Reproducing summary statistics
+In the paper \textit{Machine Learning-Aided Causal Inference Framework for Environmental Data Analysis: A COVID-19 Case Study} \cite{3}, Kang et. al explore the causal effect of environmental factors on COVID-19 severity. Using a combination of “snapshot” socio-economic indicators alongside time-series observations for 166 Chinese cities over a 76-day period from January to April 2020, the authors construct structural causal models (SCMs) to estimate causal relationships. After performing a series of robustness checks, the authors find that the vast majority (89 out of 90) of factor-effect relationships have no causal effect on COVID-19 severity. This paper provides two main conclusions: First, the specified environmental factors were unlikely to worsen the COVID-19 pandemic of 2020 and second, a combination of machine learning methods for dimensionality reduction and feature selection alongside structural causal models provide more robust conclusions than previous methods when investigating causation in the context of observational data. 
 
-Figure 1 on the next page contains the summary statistics. 
+# Section 2: Data Description 
+
+The data used for the analysis of the paper includes macroeconomic and demographic data on 166 cities in China, their travel volumes from Wuhan, and their environmental data time series. Macroeconomic and demographic data were extracted from the annual statistical bulletins and/or statistical yearbooks published by the provincial and/or city governments from 2019.  Travel volumes and degree of activeness of each city were extracted from Baidu’s location-based service database while environmental and meteorological data were acquired through the China National Environmental Monitoring Center and the Application Programming Interface of the BINSTD data trading company. Confirmed cases data were extracted from China’s Center for Disease Control and Prevention, and the data shown is the currently confirmed cases of the individual cities on that day. 
+
+# Section 3: Data Cleaning 
+
+For data cleaning, we obtained the datasets from the authors, compared them with the real data, and corrected mistakes. As the data were collected from hundreds of different sources, we decided that determining the accuracy of the features created by the authors was more important (and feasible) than re-constructing the data set from every source. As a result, we spent a larger amount of time on data quality checks. For instance, while calculating GDP, the total GDP should equal the combination of the primary, secondary and tertiary sectors. Tests were performed to examine if the above identity holds and mistakes were corrected to generate the proper numbers. In addition, certain columns of the summary statistics were expressed in different units and discrepancies were corrected. For example, the GDP data collected was quoted in RMB, while the summary statistics from the author used USD. Using an exchange rate from 2019 of 6.91 RMB to 1 USD, GDP figures were converted to the USD equivalency and summary statistics were reported using converted figures. Other data corrections involved proportion to percent conversions and per capita statistics being scaled correctly. 
+
+# Section 4: Summary Statistics and Explanations 
+
+We have placed the reproduced summary statistics figures in the Appendix. The summary statistics tables we have reproduced are originally from Table S1 and S3 in the supplemental information paper \cite{2}. From Figure 1, we observe a large spread (e.g. SD, IQR) in many variables, including Population, City Area, and GDP. Looking closer at the quartiles and extreme values of these variables, we can infer that this population of cities is not homogeneous. For instance, the difference between 75th percentile GDP and the min GDP is far smaller than the difference between the max GDP and the 75th percentile. This suggests that there are clusters of cities which possess common characteristics, which we need to account for when performing causal inference. These differences by city type are summarized in Figure 3, where the authors group mega-cities together into Cluster 1, large cities into Cluster 2, and smaller cities into Cluster 3. In this table, we can see that larger versus smaller cities have interesting differences in socio-economic indicators, such as elderly as a percentage of population, population density, and Wuhan (known to be the city of first major outbreak of COVID-19) travelers per thousand population. In contrast to the socio-economic indicators, there is considerably less spread for each environmental factor in the time-series data in Figure 2. This may be because the data is from a 3-day moving average over each variable, which reduces variability by smoothing sudden spikes. Another important point to note is that the statistics in Figure 2 are computed over every city and date. Therefore, if we were to segment this data by date or city, it could potentially tell a different story.
 
 \newpage 
 \newgeometry{margin=0.1cm}
-
-## Figure 1
 \centering 
+## Figure 1: Socio-economic "Snapshot" Summary Statistics
 \begin{tabular}{lrrrrrrrr}
 \toprule
 {} &      Mean &       SD &      Min &  25th \%ile &    Median &  75th \%ile &       Max &      IQR \\
@@ -41,12 +51,12 @@ Figure 1 on the next page contains the summary statistics.
 \textbf{Secondary sector \% of GDP             } &     41.33 &     7.58 &    16.16 &      36.66 &     41.46 &      46.31 &     60.00 &     9.65 \\
 \textbf{Tertiary sector \% of GDP              } &     50.24 &     8.08 &    33.55 &      45.07 &     48.62 &      53.57 &     83.52 &     8.50 \\
 \textbf{Average degree of activeness (0-8)    } &      5.36 &     0.64 &     2.98 &       5.05 &      5.47 &       5.76 &      7.08 &     0.71 \\
-\textbf{Wuhan travellers (thousands)          } &     23.98 &    85.02 &     0.00 &       0.00 &      2.65 &       9.09 &    691.87 &     9.09 \\
-\textbf{Wuhan travellers (per thousand pop.)  } &      6.01 &    23.30 &     0.00 &       0.00 &      0.45 &       1.52 &    187.25 &     1.52 \\
+\textbf{Wuhan travelers (thousands)          } &     23.98 &    85.02 &     0.00 &       0.00 &      2.65 &       9.09 &    691.87 &     9.09 \\
+\textbf{Wuhan travelers (per thousand pop.)  } &      6.01 &    23.30 &     0.00 &       0.00 &      0.45 &       1.52 &    187.25 &     1.52 \\
 \bottomrule
 \end{tabular}
 
-## Figure 2
+## Figure 2: 3-Day Moving Average Factor Summary Statistics 
 \centering 
 \begin{tabular}{lrrrrrrr}
 \toprule
@@ -68,7 +78,7 @@ Figure 1 on the next page contains the summary statistics.
 \bottomrule
 \end{tabular}
 
-## Figure 3 
+## Figure 3 : Mean Feature Value by City Cluster
 \centering 
 \begin{tabular}{lrrr}
 \toprule
@@ -90,15 +100,283 @@ Figure 1 on the next page contains the summary statistics.
 \textbf{Secondary sector \% of GDP             } &      32.57 &      39.54 &      42.45 \\
 \textbf{Tertiary sector \% of GDP              } &      65.58 &      56.99 &      47.07 \\
 \textbf{Average degree of activeness (0-8)    } &       4.87 &       4.84 &       5.57 \\
-\textbf{Wuhan travellers (thousands)          } &      31.69 &       7.49 &      29.07 \\
-\textbf{Wuhan travellers (per thousand pop.)  } &       1.59 &       1.07 &       7.93 \\
+\textbf{Wuhan travelers (thousands)          } &      31.69 &       7.49 &      29.07 \\
+\textbf{Wuhan travelers (per thousand pop.)  } &       1.59 &       1.07 &       7.93 \\
 \bottomrule
 \end{tabular}
 
-\newpage 
-
 \restoregeometry
 
-## This is a new page with fixed margins
+\newpage 
 
-The margins should be the same as before 
+\begin{thebibliography}{9}
+  \bibitem{1} Kang, Q. (2021, April 19). Kangqiao-Ctrl/EnvCausal: A causal inference framework for environmental data analysis. GitHub. Retrieved from https://github.com/kangqiao-ctrl/EnvCausal.
+  \bibitem{2} Kang, Q., Song, X., \& Xin, X. (2021). (publication). (B. Chen, Y. Chen, X. Ye, \& B. Zhang, Eds.)Supporting Information: Machine Learning–Aided Causal Inference Framework for Environmental Data Analysis: A COVID-19 Case Study(pp. S1–S25). St. John’s, NL: Memorial University of Newfoundland. 
+  \bibitem{3} Kang, Q., Song, X., Xin, X., Chen, Y., \& Ye, X. (2021). (publication). (B. Chen , Ed.)Machine Learning-Aided Causal Inference Framework for Environmental Data Analysis: A COVID-19 Case Study. American Chemical Society. Retrieved from https://pubs.acs.org/doi/10.1021/acs.est.1c02204?ref=pdf.
+\end{thebibliography}
+
+\newpage 
+
+# Code Appendix 
+
+```{r, echo = FALSE, eval = FALSE}
+dat = read.csv("~/Documents/UC BERKELEY/STATISTICS/STAT 156
+               /Final Project/GitHub/EnvCausal-replication/snapshot_data.csv")
+```
+
+```{r, echo = FALSE, eval = FALSE}
+levels(dat$City) = c(levels(dat$City), "Xiamen", "Lhasa", "Urumqi", "Chongqing")
+dat$City[9] = "Xiamen"
+dat$City[14] = "Lhasa"
+dat$City[18] = "Urumqi"
+dat$City[21] = "Chongqing"
+```
+
+```{r, echo = FALSE, eval = FALSE}
+filter(dat, abs(dat$PRIM + dat$SEC + dat$TERT - dat$GDP) >1)
+```
+
+```{r, echo = FALSE, eval = FALSE}
+dat$SEC[dat$City == "Changchun"] = 2495.4
+dat$GDP[dat$City == "Xiamen"] = 5995.04
+dat$PRIM[dat$City == "Chongqing"] = 1551.42
+dat$GDP[dat$City == "Baoding"] = 3558
+dat$TERT[dat$City == "Huzhou"] = 1393.2
+filter(dat, abs(dat$PRIM + dat$SEC + dat$TERT - dat$GDP) >1)
+```
+
+```{r, echo = FALSE, eval = FALSE}
+dat$POP = dat$POP*10
+dat$GDP = dat$GDP/6.91/10
+dat$PRIM = dat$PRIM/6.91/10
+dat$SEC = dat$SEC/6.91/10
+dat$TERT = dat$TERT/6.91/10
+dat$GDPpc = dat$GDP/dat$POP*1000
+dat$Prim. = dat$PRIM/dat$GDP
+dat$Sec.= dat$SEC/dat$GDP
+dat$Tert. = dat$TERT/dat$GDP
+dat$POPDENS = dat$POP/dat$Area*1000
+```
+
+```{r, echo = FALSE, eval = FALSE}
+summary(dat)
+```
+
+```{r, echo = FALSE, eval = FALSE}
+envdat = read.csv("~/Documents/UC BERKELEY/STATISTICS/STAT 156/Final Project
+/EnvCausal-main/data/time_series/
+                  3_day_moving_average/df_m3.csv")
+```
+
+```{r, echo = FALSE, eval = FALSE}
+summary(envdat)
+```
+
+``` {r dc, echo = FALSE, eval = FALSE}
+# Libraries for data processing and math 
+import pandas as pd
+import numpy as np
+
+# Library for file path manipulation 
+import os
+
+# Library for Mandarin to English translation 
+import pinyin
+
+# Library for simplifying function calls 
+from functools import partial
+
+# This gets the file path of the data folder in EnvCausal-replication 
+root = os.path.dirname(os.getcwd())
+data_dir = os.path.join(root, 'data')
+
+# Set the file path for the cleaned snapshot data set
+snapshot_path = os.path.join(data_dir, 'cleaned_snapshot_data.csv')
+
+# Set the file path for the cleaned cluster data sets
+cluster1_path = os.path.join(data_dir, 'cluster1_snapshot.csv')
+cluster2_path = os.path.join(data_dir, 'cluster2_snapshot.csv')
+cluster3_path = os.path.join(data_dir, 'cluster3_snapshot.csv')
+
+# Set the file path for the 3-day moving average data set
+time_series_3_day_dir = os.path.join(data_dir,
+                                     'time_series', '3_day_moving_average')
+time_series_path = os.path.join(time_series_3_day_dir, 'df_m3.csv')
+
+# Read snapshots data set 
+snapshots = pd.read_csv(snapshot_path)
+
+# Rename features for clarity 
+column_name_map = {
+                   'POP':'Population (in thousands)',
+                   'Area':'City area (in km^2)',
+                   'POPDENS':'Population Density (people per km^2)',
+                   'GDP':'GDP (Billions USD)',
+                   'PRIM':'Primary sector (Billions USD)',
+                   'SEC':'Secondary sector (Billions USD)',
+                   'TERT':'Tertiary sector (Billions USD)',
+                   'Prim.':'Primary sector % of GDP',
+                   'Sec.':'Secondary sector % of GDP',
+                   'Tert.':'Tertiary sector % of GDP',
+                   'GDPpc':'GDP per capita (Billions USD per km^2)',
+                   'X.60yr.':'Elderly population %',
+                   'BED':'Hospital Beds (per thousand people)',
+                   'DOC':'Registered doctors (per thousand)',
+                   'NRS':'Registered nurses (per thousand)',
+                   'TVLR':'Wuhan travellers (thousands)',
+                   'TVLR.':'Wuhan travellers (per thousand pop.)',
+                   'ACTV':'Average degree of activeness (0-8)'
+                  }
+
+# Drop unnecessary columns 
+snapshots_general = snapshots.drop(
+    columns=[x for x in snapshots.columns if x not in column_name_map]).rename(
+    column_name_map, axis=1)
+
+# Compute summary statistics 
+first_quartile = partial(np.percentile, q=25, axis=0)
+third_quartile = partial(np.percentile, q=75, axis=0)
+summary_stats_snapshot  = snapshots_general.apply([np.mean, np.std, np.min,
+                first_quartile,
+                 np.median, third_quartile, np.max],
+                 axis=0, result_type='broadcast').T.round(2)
+
+# Clean up snapshot summary table 
+summary_stats_snapshot.columns = ['Mean',
+                         'SD',
+                         'Min',
+                         '25th %ile',
+                         'Median',
+                         '75th %ile',
+                         'Max']
+summary_stats_snapshot['IQR'] = summary_stats_snapshot[
+  '75th %ile'] - summary_stats_snapshot['25th %ile']
+
+# Display summary table 
+summary_stats_snapshot
+
+# Read time series data set 
+time_series = pd.read_csv(time_series_path)
+
+# Rename features for clarity
+column_name_map_2 = {
+                        'PM2.5':'PM2.5 (ug/m3)',
+                        'PM10':'PM10 (ug/m3)',
+                        'SO2':'SO2 (ug/m3)',
+                        'CO':'CO (mg/m3)' ,
+                        'NO2':'NO2 (ug/m3)',
+                        'O3':'O3 (ug/m3)',
+                        'HUM':'Relative humidity (%)',
+                        'PRES':'Atmospheric pressure (hpa)',
+                        'WSPD':'Wind speed (m/s)',
+                        'TEMP':'Average air temperature',
+                        'ACTV':'Degree of activeness',
+                        'Case':'New confirmed cases',
+                        'MORB%':'Morbidity rate'
+                    }
+
+# Define utility functions for Chinese to English (pinyin) character translation 
+def eng_translator(phrase_list):
+    translation_map = {}
+    for phrase in phrase_list:
+        pinyin_phrase = pinyin.get(phrase, format="strip", delimiter=" ")
+        pinyin_phrase = ''.join(pinyin_phrase.split(' '))
+        pinyin_phrase = pinyin_phrase[0].upper() + pinyin_phrase[1:]
+        translation_map[phrase] = pinyin_phrase
+    return translation_map
+
+def translate_column_to_eng(df, col):
+    unique_phrases = np.unique(df[col]).tolist()
+    translation_map = eng_translator(unique_phrases)
+    return df[col].map(translation_map)
+
+# time_series.columns.values[0] = 'Date'
+# time_series.columns.values[1] = 'City'
+# time_series['City'] = translate_column_to_eng(time_series, 'City')
+
+# Drop unnecessary columns 
+time_series = time_series.drop(
+    columns=[x for x in time_series.columns if x not in column_name_map_2]).rename(
+    column_name_map_2, axis=1)
+
+# Compute summary statistics 
+summary_stats_time_series = time_series.apply([np.mean, np.std, np.min, first_quartile,
+                 np.median, third_quartile, np.max],
+                 axis=0, result_type='broadcast').T.round(2)
+
+# Clean up snapshot summary table 
+summary_stats_time_series.columns = ['Mean',
+                         'SD',
+                         'Min',
+                         '25th %ile',
+                         'Median',
+                         '75th %ile',
+                         'Max']
+
+# Display summary table 
+summary_stats_time_series
+
+# Read cluster snapshots data set 
+cluster1 = pd.read_csv(cluster1_path)
+cluster2 = pd.read_csv(cluster2_path)
+cluster3 = pd.read_csv(cluster3_path)
+
+# Rename features for clarity 
+column_name_map = {
+                   'POP':'Population (in thousands)',
+                   'Area':'City area (in km^2)',
+                   'POPDENS':'Population Density (people per km^2)',
+                   'GDP':'GDP (Billions USD)',
+                   'PRIM':'Primary sector (Billions USD)',
+                   'SEC':'Secondary sector (Billions USD)',
+                   'TERT':'Tertiary sector (Billions USD)',
+                   'Prim.':'Primary sector % of GDP',
+                   'Sec.':'Secondary sector % of GDP',
+                   'Tert.':'Tertiary sector % of GDP',
+                   'GDPpc':'GDP per capita (Billions USD per km^2)',
+                   'X.60yr.':'Elderly population %',
+                   'BED':'Hospital Beds (per thousand people)',
+                   'DOC':'Registered doctors (per thousand)',
+                   'NRS':'Registered nurses (per thousand)',
+                   'TVLR':'Wuhan travellers (thousands)',
+                   'TVLR.':'Wuhan travellers (per thousand pop.)',
+                   'ACTV':'Average degree of activeness (0-8)'
+                  }
+
+# Drop unnecessary columns 
+cluster1_general = cluster1.drop(
+    columns=[x for x in cluster1.columns if x not in column_name_map]).rename(
+    column_name_map, axis=1)
+cluster2_general = cluster2.drop(
+    columns=[x for x in cluster2.columns if x not in column_name_map]).rename(
+    column_name_map, axis=1)
+cluster3_general = cluster3.drop(
+    columns=[x for x in cluster3.columns if x not in column_name_map]).rename(
+    column_name_map, axis=1)
+
+# Compute cluster-wise feature averages 
+summary_stats_cluster1  = cluster1_general.apply([np.mean],
+                 axis=0, result_type='broadcast').T.round(2)
+summary_stats_cluster2  = cluster2_general.apply([np.mean],
+                 axis=0, result_type='broadcast').T.round(2)
+summary_stats_cluster3  = cluster3_general.apply([np.mean],
+                 axis=0, result_type='broadcast').T.round(2)
+
+# Concatenate results together 
+mean_feature_by_cluster = pd.concat(
+    [summary_stats_cluster1, summary_stats_cluster2, summary_stats_cluster3],
+    axis=1)
+
+# Clean up snapshot summary table
+mean_feature_by_cluster.columns.values[0] = 'Cluster 1'
+mean_feature_by_cluster.columns.values[1] = 'Cluster 2'
+mean_feature_by_cluster.columns.values[2] = 'Cluster 3'
+
+# Display summary table 
+mean_feature_by_cluster
+```
+
+```{r ref.label=knitr::all_labels(), echo=TRUE, eval=FALSE}
+```
+
+\newpage 
