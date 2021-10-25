@@ -13,22 +13,30 @@ library(dplyr)
 The following code is what I used to clean and analyze the data.
 
 ```{r}
-dat = read.csv("~/Documents/UC BERKELEY/STATISTICS/STAT 156/Final Project/GitHub/EnvCausal-replication/snapshot_data.csv")
+dat = read.csv("~/Documents/UC BERKELEY/STATISTICS/STAT 156/Final Project/GitHub/EnvCausal-replication/data/snapshot_data.csv")
 ```
 
 The following are premininary summaries of the data.
 
 ```{r}
 summary(dat)
+
+dat = dat[-c(20:23)]
+summary(dat)
 ```
 
 
 ```{r}
-levels(dat$City) = c(levels(dat$City), "Xiamen", "Lhasa", "Urumqi", "Chongqing")
+levels(dat$City) = c(levels(dat$City), "Xiamen", "Lhasa", "Urumqi", "Chongqing", "Hohhot", "Changsha", "Foshan", "Bengbu")
 dat$City[9] = "Xiamen"
 dat$City[14] = "Lhasa"
 dat$City[18] = "Urumqi"
 dat$City[21] = "Chongqing"
+dat$City[75] = "Hohhot"
+dat$City[152] = "Changsha"
+dat$City[161] = "Foshan"
+dat$City[103] = "Bengbu"
+
 ```
 
 
@@ -60,11 +68,22 @@ dat$Prim. = dat$PRIM/dat$GDP
 dat$Sec.= dat$SEC/dat$GDP
 dat$Tert. = dat$TERT/dat$GDP
 dat$POPDENS = dat$POP/dat$Area*1000
+dat$Prim. = dat$Prim.*100
+dat$Sec.= dat$Sec. *100
+dat$Tert.= dat$Tert. *100
+dat$X.60yr. = dat$X.60yr.*100
+dat$TVLR.= dat$TVLR.*1000
+dat$TVLR = dat$TVLR*10
 ```
 
 ```{r}
 summary(dat)
 ```
+
+```{r}
+# write.csv(dat, "~/Documents/UC BERKELEY/STATISTICS/STAT 156/Final Project/GitHub/EnvCausal-replication/data/cleaned_data.csv")
+```
+
 
 ```{r}
 envdat = read.csv("~/Documents/UC BERKELEY/STATISTICS/STAT 156/Final Project/EnvCausal-main/data/time_series/3_day_moving_average/df_m3.csv")
@@ -74,5 +93,33 @@ envdat = read.csv("~/Documents/UC BERKELEY/STATISTICS/STAT 156/Final Project/Env
 summary(envdat)
 ```
 
+```{r}
+dat$GDPpc = dat$GDPpc*6.91
 
+cluster1 = filter(dat, City == "Beijing" | City == "Shanghai" | City == "Chongqing" |City ==  "Suzhou" | City == "Chengdu" |City ==  "Guangzhou" | City ==  "Shenzhen")
+cluster1 = cluster1[-5, ]
+
+# write.csv(cluster1, "~/Documents/UC BERKELEY/STATISTICS/STAT 156/Final Project/GitHub/EnvCausal-replication/data/cluster1.csv")
+
+summary(cluster1)
+```
+
+```{r}
+cluster2 = filter(dat, City == "Shenyang" | City == "Dalian" | City == "Fuzhou" |City ==  "Xiamen" | City == "Nanning" |City ==  "Haikou" | City ==  "Guiyang" | City == "Kunming" | City == "Lhasa" |
+ City == "Lanzhou" |City ==  "Xining" | City ==  "Yinchuan" | City == "Urumqi" | City == "Tianjin" | City == "Shijiazhuang" |    City == "Taiyuan" |City ==  "Jinan" | City ==  "Qingdao" | City == "Zhengzhou" | City == "Hohhot" |    City == "Baotou" |City ==  "Nanjing" | City ==  "Wuxi" | City == "Changzhou" | City == "Hangzhou" |     City == "Ningbo" |City ==  "Wenzhou" | City ==  "Shaoxing" | City == "Jiaxing" | City == "Jinhua" |     City == "Hefei" |City ==  "Xian" | City ==  "Tongchuan" | City == "Nanchang" | City == "Changsha" |
+City == "Zhuhai" |City ==  "Foshan" | City ==  "Huizhou" | City == "Dongguan" | City == "Zhongshan")
+ 
+# write.csv(cluster2, "~/Documents/UC BERKELEY/STATISTICS/STAT 156/Final Project/GitHub/EnvCausal-replication/data/cluster2.csv") 
+
+summary(cluster2)
+  
+```
+
+```{r}
+cluster3 = dat[-c(1, 2, 8:23, 34, 45, 46, 58, 75:78, 80, 81, 90:93, 95, 96, 101, 117, 120, 122, 147, 152, 158, 159, 160, 161, 165, 164, 166), ]
+
+# write.csv(cluster3, "~/Documents/UC BERKELEY/STATISTICS/STAT 156/Final Project/GitHub/EnvCausal-replication/data/cluster3.csv") 
+
+summary(cluster3)
+```
 
