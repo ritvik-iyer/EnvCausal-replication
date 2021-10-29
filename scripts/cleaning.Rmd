@@ -1,4 +1,4 @@
----
+--
 title: "156 Replication Project"
 author: "Samuel Gao"
 date: "9/28/2021"
@@ -8,6 +8,7 @@ output: pdf_document
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 library(dplyr)
+library(translateR)
 ```
 
 The following code is what I used to clean and analyze the data.
@@ -27,11 +28,12 @@ summary(dat)
 
 
 ```{r}
-levels(dat$City) = c(levels(dat$City), "Xiamen", "Lhasa", "Urumqi", "Chongqing", "Hohhot", "Changsha", "Foshan", "Bengbu")
+levels(dat$City) = c(levels(dat$City), "Xiamen", "Lhasa", "Urumqi", "Chongqing", "Hohhot", "Changsha", "Foshan", "Bengbu", "Luliang")
 dat$City[9] = "Xiamen"
 dat$City[14] = "Lhasa"
 dat$City[18] = "Urumqi"
 dat$City[21] = "Chongqing"
+dat$City[41] = "Luliang"
 dat$City[75] = "Hohhot"
 dat$City[152] = "Changsha"
 dat$City[161] = "Foshan"
@@ -81,7 +83,7 @@ summary(dat)
 ```
 
 ```{r}
-# write.csv(dat, "~/Documents/UC BERKELEY/STATISTICS/STAT 156/Final Project/GitHub/EnvCausal-replication/data/cleaned_data.csv")
+write.csv(dat, "~/Documents/UC BERKELEY/STATISTICS/STAT 156/Final Project/GitHub/EnvCausal-replication/data/cleaned_data.csv")
 ```
 
 
@@ -122,4 +124,240 @@ cluster3 = dat[-c(1, 2, 8:23, 34, 45, 46, 58, 75:78, 80, 81, 90:93, 95, 96, 101,
 
 summary(cluster3)
 ```
+
+```{r}
+write.csv(envdat, "~/Documents/UC BERKELEY/STATISTICS/STAT 156/Final Project/GitHub/EnvCausal-replication/data/envdat.csv") 
+```
+
+```{r}
+time_cluster_1 = envdat[envdat$X.1== "上海", ]
+time_cluster_1 = rbind(time_cluster_1, envdat[envdat$X.1== "重庆", ])
+time_cluster_1 = rbind(time_cluster_1, envdat[envdat$X.1== "苏州", ])
+time_cluster_1 = rbind(time_cluster_1, envdat[envdat$X.1== "北京", ])
+time_cluster_1 = rbind(time_cluster_1, envdat[envdat$X.1== "成都", ])
+time_cluster_1 = rbind(time_cluster_1, envdat[envdat$X.1== "广州", ])
+time_cluster_1 = rbind(time_cluster_1, envdat[envdat$X.1== "深圳", ])
+```
+
+```{r}
+time_cluster_2 = envdat[envdat$X.1== "沈阳", ]
+time_cluster_2 = rbind(time_cluster_2, envdat[envdat$X.1== "大连", ])
+time_cluster_2 = rbind(time_cluster_2, envdat[envdat$X.1== "福州", ])
+time_cluster_2 = rbind(time_cluster_2, envdat[envdat$X.1== "厦门", ])
+time_cluster_2 = rbind(time_cluster_2, envdat[envdat$X.1== "南宁", ])
+time_cluster_2 = rbind(time_cluster_2, envdat[envdat$X.1== "海口", ])
+time_cluster_2 = rbind(time_cluster_2, envdat[envdat$X.1== "贵阳", ])
+time_cluster_2 = rbind(time_cluster_2, envdat[envdat$X.1== "昆明", ])
+time_cluster_2 = rbind(time_cluster_2, envdat[envdat$X.1== "拉萨", ])
+time_cluster_2 = rbind(time_cluster_2, envdat[envdat$X.1== "兰州", ])
+time_cluster_2 = rbind(time_cluster_2, envdat[envdat$X.1== "西宁", ])
+time_cluster_2 = rbind(time_cluster_2, envdat[envdat$X.1== "银川", ])
+time_cluster_2 = rbind(time_cluster_2, envdat[envdat$X.1== "乌鲁木齐", ])
+time_cluster_2 = rbind(time_cluster_2, envdat[envdat$X.1== "天津", ])
+time_cluster_2 = rbind(time_cluster_2, envdat[envdat$X.1== "石家庄", ])
+time_cluster_2 = rbind(time_cluster_2, envdat[envdat$X.1== "太原", ])
+time_cluster_2 = rbind(time_cluster_2, envdat[envdat$X.1== "济南", ])
+time_cluster_2 = rbind(time_cluster_2, envdat[envdat$X.1== "青岛", ])
+time_cluster_2 = rbind(time_cluster_2, envdat[envdat$X.1== "郑州", ])
+time_cluster_2 = rbind(time_cluster_2, envdat[envdat$X.1== "呼和浩特", ])
+time_cluster_2 = rbind(time_cluster_2, envdat[envdat$X.1== "包头", ])
+time_cluster_2 = rbind(time_cluster_2, envdat[envdat$X.1== "南京", ])
+time_cluster_2 = rbind(time_cluster_2, envdat[envdat$X.1== "无锡", ])
+time_cluster_2 = rbind(time_cluster_2, envdat[envdat$X.1== "常州", ])
+time_cluster_2 = rbind(time_cluster_2, envdat[envdat$X.1== "杭州", ])
+time_cluster_2 = rbind(time_cluster_2, envdat[envdat$X.1== "宁波", ])
+time_cluster_2 = rbind(time_cluster_2, envdat[envdat$X.1== "温州", ])
+time_cluster_2 = rbind(time_cluster_2, envdat[envdat$X.1== "绍兴", ])
+time_cluster_2 = rbind(time_cluster_2, envdat[envdat$X.1== "金华", ])
+time_cluster_2 = rbind(time_cluster_2, envdat[envdat$X.1== "嘉兴", ])
+time_cluster_2 = rbind(time_cluster_2, envdat[envdat$X.1== "合肥", ])
+time_cluster_2 = rbind(time_cluster_2, envdat[envdat$X.1== "西安", ])
+time_cluster_2 = rbind(time_cluster_2, envdat[envdat$X.1== "铜川", ])
+time_cluster_2 = rbind(time_cluster_2, envdat[envdat$X.1== "南昌", ])
+time_cluster_2 = rbind(time_cluster_2, envdat[envdat$X.1== "长沙", ])
+time_cluster_2 = rbind(time_cluster_2, envdat[envdat$X.1== "珠海", ])
+time_cluster_2 = rbind(time_cluster_2, envdat[envdat$X.1== "佛山", ])
+time_cluster_2 = rbind(time_cluster_2, envdat[envdat$X.1== "惠州", ])
+time_cluster_2 = rbind(time_cluster_2, envdat[envdat$X.1== "东莞", ])
+time_cluster_2 = rbind(time_cluster_2, envdat[envdat$X.1== "中山", ])
+```
+
+```{r}
+time_cluster_3 = envdat
+time_cluster_3 = time_cluster_3[! time_cluster_3$X.1== "上海", ]
+time_cluster_3 = time_cluster_3[! time_cluster_3$X.1== "重庆", ]
+time_cluster_3 = time_cluster_3[! time_cluster_3$X.1== "苏州", ]
+time_cluster_3 = time_cluster_3[! time_cluster_3$X.1== "北京", ]
+time_cluster_3 = time_cluster_3[! time_cluster_3$X.1== "成都", ]
+time_cluster_3 = time_cluster_3[! time_cluster_3$X.1== "广州", ]
+time_cluster_3 = time_cluster_3[! time_cluster_3$X.1== "深圳", ]
+time_cluster_3 = time_cluster_3[! time_cluster_3$X.1== "沈阳", ]
+time_cluster_3 = time_cluster_3[! time_cluster_3$X.1== "大连", ]
+time_cluster_3 = time_cluster_3[! time_cluster_3$X.1== "福州", ]
+time_cluster_3 = time_cluster_3[! time_cluster_3$X.1== "厦门", ]
+time_cluster_3 = time_cluster_3[! time_cluster_3$X.1== "南宁", ]
+time_cluster_3 = time_cluster_3[! time_cluster_3$X.1== "海口", ]
+time_cluster_3 = time_cluster_3[! time_cluster_3$X.1== "贵阳", ]
+time_cluster_3 = time_cluster_3[! time_cluster_3$X.1== "昆明", ]
+time_cluster_3 = time_cluster_3[! time_cluster_3$X.1== "拉萨", ]
+time_cluster_3 = time_cluster_3[! time_cluster_3$X.1== "兰州", ]
+time_cluster_3 = time_cluster_3[! time_cluster_3$X.1== "西宁", ]
+time_cluster_3 = time_cluster_3[! time_cluster_3$X.1== "银川", ]
+time_cluster_3 = time_cluster_3[! time_cluster_3$X.1== "乌鲁木齐", ]
+time_cluster_3 = time_cluster_3[! time_cluster_3$X.1== "天津", ]
+time_cluster_3 = time_cluster_3[! time_cluster_3$X.1== "石家庄", ]
+time_cluster_3 = time_cluster_3[! time_cluster_3$X.1== "太原", ]
+time_cluster_3 = time_cluster_3[! time_cluster_3$X.1== "济南", ]
+time_cluster_3 = time_cluster_3[! time_cluster_3$X.1== "青岛", ]
+time_cluster_3 = time_cluster_3[! time_cluster_3$X.1== "郑州", ]
+time_cluster_3 = time_cluster_3[! time_cluster_3$X.1== "呼和浩特", ]
+time_cluster_3 = time_cluster_3[! time_cluster_3$X.1== "包头", ]
+time_cluster_3 = time_cluster_3[! time_cluster_3$X.1== "南京", ]
+time_cluster_3 = time_cluster_3[! time_cluster_3$X.1== "无锡", ]
+time_cluster_3 = time_cluster_3[! time_cluster_3$X.1== "常州", ]
+time_cluster_3 = time_cluster_3[! time_cluster_3$X.1== "杭州", ]
+time_cluster_3 = time_cluster_3[! time_cluster_3$X.1== "宁波", ]
+time_cluster_3 = time_cluster_3[! time_cluster_3$X.1== "温州", ]
+time_cluster_3 = time_cluster_3[! time_cluster_3$X.1== "绍兴", ]
+time_cluster_3 = time_cluster_3[! time_cluster_3$X.1== "金华", ]
+time_cluster_3 = time_cluster_3[! time_cluster_3$X.1== "嘉兴", ]
+time_cluster_3 = time_cluster_3[! time_cluster_3$X.1== "合肥", ]
+time_cluster_3 = time_cluster_3[! time_cluster_3$X.1== "西安", ]
+time_cluster_3 = time_cluster_3[! time_cluster_3$X.1== "铜川", ]
+time_cluster_3 = time_cluster_3[! time_cluster_3$X.1== "南昌", ]
+time_cluster_3 = time_cluster_3[! time_cluster_3$X.1== "长沙", ]
+time_cluster_3 = time_cluster_3[! time_cluster_3$X.1== "珠海", ]
+time_cluster_3 = time_cluster_3[! time_cluster_3$X.1== "佛山", ]
+time_cluster_3 = time_cluster_3[! time_cluster_3$X.1== "惠州", ]
+time_cluster_3 = time_cluster_3[! time_cluster_3$X.1== "东莞", ]
+time_cluster_3 = time_cluster_3[! time_cluster_3$X.1== "中山", ]
+```
+
+```{r}
+time_cluster_1_spread = time_cluster_1[time_cluster_1$X == "2020-01-22", ]
+time_cluster_1_spread = rbind(time_cluster_1_spread, time_cluster_1[time_cluster_1$X == "2020-01-23", ])
+time_cluster_1_spread = rbind(time_cluster_1_spread, time_cluster_1[time_cluster_1$X == "2020-01-24", ])
+time_cluster_1_spread = rbind(time_cluster_1_spread, time_cluster_1[time_cluster_1$X == "2020-01-25", ])
+time_cluster_1_spread = rbind(time_cluster_1_spread, time_cluster_1[time_cluster_1$X == "2020-01-26", ])
+time_cluster_1_spread = rbind(time_cluster_1_spread, time_cluster_1[time_cluster_1$X == "2020-01-27", ])
+time_cluster_1_spread = rbind(time_cluster_1_spread, time_cluster_1[time_cluster_1$X == "2020-01-28", ])
+time_cluster_1_spread = rbind(time_cluster_1_spread, time_cluster_1[time_cluster_1$X == "2020-01-29", ])
+time_cluster_1_spread = rbind(time_cluster_1_spread, time_cluster_1[time_cluster_1$X == "2020-01-30", ])
+time_cluster_1_spread = rbind(time_cluster_1_spread, time_cluster_1[time_cluster_1$X == "2020-01-31", ])
+time_cluster_1_spread = rbind(time_cluster_1_spread, time_cluster_1[time_cluster_1$X == "2020-02-01", ])
+time_cluster_1_spread = rbind(time_cluster_1_spread, time_cluster_1[time_cluster_1$X == "2020-02-02", ])
+time_cluster_1_spread = rbind(time_cluster_1_spread, time_cluster_1[time_cluster_1$X == "2020-02-03", ])
+```
+
+```{r}
+time_cluster_1_postpeak = time_cluster_1
+time_cluster_1_postpeak = time_cluster_1_postpeak[ ! time_cluster_1_postpeak$X == "2020-01-22", ]
+time_cluster_1_postpeak = time_cluster_1_postpeak[ ! time_cluster_1_postpeak$X == "2020-01-23", ]
+time_cluster_1_postpeak = time_cluster_1_postpeak[ ! time_cluster_1_postpeak$X == "2020-01-24", ]
+time_cluster_1_postpeak = time_cluster_1_postpeak[ ! time_cluster_1_postpeak$X == "2020-01-25", ]
+time_cluster_1_postpeak = time_cluster_1_postpeak[ ! time_cluster_1_postpeak$X == "2020-01-26", ]
+time_cluster_1_postpeak = time_cluster_1_postpeak[ ! time_cluster_1_postpeak$X == "2020-01-27", ]
+time_cluster_1_postpeak = time_cluster_1_postpeak[ ! time_cluster_1_postpeak$X == "2020-01-28", ]
+time_cluster_1_postpeak = time_cluster_1_postpeak[ ! time_cluster_1_postpeak$X == "2020-01-29", ]
+time_cluster_1_postpeak = time_cluster_1_postpeak[ ! time_cluster_1_postpeak$X == "2020-01-30", ]
+time_cluster_1_postpeak = time_cluster_1_postpeak[ ! time_cluster_1_postpeak$X == "2020-01-31", ]
+time_cluster_1_postpeak = time_cluster_1_postpeak[ ! time_cluster_1_postpeak$X == "2020-02-01", ]
+time_cluster_1_postpeak = time_cluster_1_postpeak[ ! time_cluster_1_postpeak$X == "2020-02-02", ]
+time_cluster_1_postpeak = time_cluster_1_postpeak[ ! time_cluster_1_postpeak$X == "2020-02-03", ]
+```
+
+
+```{r}
+time_cluster_2_spread = time_cluster_2[time_cluster_2$X == "2020-01-22", ]
+time_cluster_2_spread = rbind(time_cluster_2_spread, time_cluster_2[time_cluster_2$X == "2020-01-23", ])
+time_cluster_2_spread = rbind(time_cluster_2_spread, time_cluster_2[time_cluster_2$X == "2020-01-24", ])
+time_cluster_2_spread = rbind(time_cluster_2_spread, time_cluster_2[time_cluster_2$X == "2020-01-25", ])
+time_cluster_2_spread = rbind(time_cluster_2_spread, time_cluster_2[time_cluster_2$X == "2020-01-26", ])
+time_cluster_2_spread = rbind(time_cluster_2_spread, time_cluster_2[time_cluster_2$X == "2020-01-27", ])
+time_cluster_2_spread = rbind(time_cluster_2_spread, time_cluster_2[time_cluster_2$X == "2020-01-28", ])
+time_cluster_2_spread = rbind(time_cluster_2_spread, time_cluster_2[time_cluster_2$X == "2020-01-29", ])
+time_cluster_2_spread = rbind(time_cluster_2_spread, time_cluster_2[time_cluster_2$X == "2020-01-30", ])
+time_cluster_2_spread = rbind(time_cluster_2_spread, time_cluster_2[time_cluster_2$X == "2020-01-31", ])
+time_cluster_2_spread = rbind(time_cluster_2_spread, time_cluster_2[time_cluster_2$X == "2020-02-01", ])
+time_cluster_2_spread = rbind(time_cluster_2_spread, time_cluster_2[time_cluster_2$X == "2020-02-02", ])
+time_cluster_2_spread = rbind(time_cluster_2_spread, time_cluster_2[time_cluster_2$X == "2020-02-03", ])
+time_cluster_2_spread = rbind(time_cluster_2_spread, time_cluster_2[time_cluster_2$X == "2020-02-04", ])
+time_cluster_2_spread = rbind(time_cluster_2_spread, time_cluster_2[time_cluster_2$X == "2020-02-05", ])
+time_cluster_2_spread = rbind(time_cluster_2_spread, time_cluster_2[time_cluster_2$X == "2020-02-06", ])
+```
+
+```{r}
+time_cluster_2_postpeak = time_cluster_2
+time_cluster_2_postpeak = time_cluster_2_postpeak[ ! time_cluster_2_postpeak$X == "2020-01-22", ]
+time_cluster_2_postpeak = time_cluster_2_postpeak[ ! time_cluster_2_postpeak$X == "2020-01-23", ]
+time_cluster_2_postpeak = time_cluster_2_postpeak[ ! time_cluster_2_postpeak$X == "2020-01-24", ]
+time_cluster_2_postpeak = time_cluster_2_postpeak[ ! time_cluster_2_postpeak$X == "2020-01-25", ]
+time_cluster_2_postpeak = time_cluster_2_postpeak[ ! time_cluster_2_postpeak$X == "2020-01-26", ]
+time_cluster_2_postpeak = time_cluster_2_postpeak[ ! time_cluster_2_postpeak$X == "2020-01-27", ]
+time_cluster_2_postpeak = time_cluster_2_postpeak[ ! time_cluster_2_postpeak$X == "2020-01-28", ]
+time_cluster_2_postpeak = time_cluster_2_postpeak[ ! time_cluster_2_postpeak$X == "2020-01-29", ]
+time_cluster_2_postpeak = time_cluster_2_postpeak[ ! time_cluster_2_postpeak$X == "2020-01-30", ]
+time_cluster_2_postpeak = time_cluster_2_postpeak[ ! time_cluster_2_postpeak$X == "2020-01-31", ]
+time_cluster_2_postpeak = time_cluster_2_postpeak[ ! time_cluster_2_postpeak$X == "2020-02-01", ]
+time_cluster_2_postpeak = time_cluster_2_postpeak[ ! time_cluster_2_postpeak$X == "2020-02-02", ]
+time_cluster_2_postpeak = time_cluster_2_postpeak[ ! time_cluster_2_postpeak$X == "2020-02-03", ]
+time_cluster_2_postpeak = time_cluster_2_postpeak[ ! time_cluster_2_postpeak$X == "2020-02-04", ]
+time_cluster_2_postpeak = time_cluster_2_postpeak[ ! time_cluster_2_postpeak$X == "2020-02-05", ]
+time_cluster_2_postpeak = time_cluster_2_postpeak[ ! time_cluster_2_postpeak$X == "2020-02-06", ]
+```
+
+```{r}
+time_cluster_3_spread = time_cluster_3[time_cluster_3$X == "2020-01-22", ]
+time_cluster_3_spread = rbind(time_cluster_3_spread, time_cluster_3[time_cluster_3$X == "2020-01-23", ])
+time_cluster_3_spread = rbind(time_cluster_3_spread, time_cluster_3[time_cluster_3$X == "2020-01-24", ])
+time_cluster_3_spread = rbind(time_cluster_3_spread, time_cluster_3[time_cluster_3$X == "2020-01-25", ])
+time_cluster_3_spread = rbind(time_cluster_3_spread, time_cluster_3[time_cluster_3$X == "2020-01-26", ])
+time_cluster_3_spread = rbind(time_cluster_3_spread, time_cluster_3[time_cluster_3$X == "2020-01-27", ])
+time_cluster_3_spread = rbind(time_cluster_3_spread, time_cluster_3[time_cluster_3$X == "2020-01-28", ])
+time_cluster_3_spread = rbind(time_cluster_3_spread, time_cluster_3[time_cluster_3$X == "2020-01-29", ])
+time_cluster_3_spread = rbind(time_cluster_3_spread, time_cluster_3[time_cluster_3$X == "2020-01-30", ])
+time_cluster_3_spread = rbind(time_cluster_3_spread, time_cluster_3[time_cluster_3$X == "2020-01-31", ])
+time_cluster_3_spread = rbind(time_cluster_3_spread, time_cluster_3[time_cluster_3$X == "2020-02-01", ])
+time_cluster_3_spread = rbind(time_cluster_3_spread, time_cluster_3[time_cluster_3$X == "2020-02-02", ])
+time_cluster_3_spread = rbind(time_cluster_3_spread, time_cluster_3[time_cluster_3$X == "2020-02-03", ])
+time_cluster_3_spread = rbind(time_cluster_3_spread, time_cluster_3[time_cluster_3$X == "2020-02-04", ])
+time_cluster_3_spread = rbind(time_cluster_3_spread, time_cluster_3[time_cluster_3$X == "2020-02-05", ])
+time_cluster_3_spread = rbind(time_cluster_3_spread, time_cluster_3[time_cluster_3$X == "2020-02-06", ])
+```
+
+```{r}
+time_cluster_3_postpeak = time_cluster_3
+time_cluster_3_postpeak = time_cluster_3_postpeak[ ! time_cluster_3_postpeak$X == "2020-01-22", ]
+time_cluster_3_postpeak = time_cluster_3_postpeak[ ! time_cluster_3_postpeak$X == "2020-01-23", ]
+time_cluster_3_postpeak = time_cluster_3_postpeak[ ! time_cluster_3_postpeak$X == "2020-01-24", ]
+time_cluster_3_postpeak = time_cluster_3_postpeak[ ! time_cluster_3_postpeak$X == "2020-01-25", ]
+time_cluster_3_postpeak = time_cluster_3_postpeak[ ! time_cluster_3_postpeak$X == "2020-01-26", ]
+time_cluster_3_postpeak = time_cluster_3_postpeak[ ! time_cluster_3_postpeak$X == "2020-01-27", ]
+time_cluster_3_postpeak = time_cluster_3_postpeak[ ! time_cluster_3_postpeak$X == "2020-01-28", ]
+time_cluster_3_postpeak = time_cluster_3_postpeak[ ! time_cluster_3_postpeak$X == "2020-01-29", ]
+time_cluster_3_postpeak = time_cluster_3_postpeak[ ! time_cluster_3_postpeak$X == "2020-01-30", ]
+time_cluster_3_postpeak = time_cluster_3_postpeak[ ! time_cluster_3_postpeak$X == "2020-01-31", ]
+time_cluster_3_postpeak = time_cluster_3_postpeak[ ! time_cluster_3_postpeak$X == "2020-02-01", ]
+time_cluster_3_postpeak = time_cluster_3_postpeak[ ! time_cluster_3_postpeak$X == "2020-02-02", ]
+time_cluster_3_postpeak = time_cluster_3_postpeak[ ! time_cluster_3_postpeak$X == "2020-02-03", ]
+time_cluster_3_postpeak = time_cluster_3_postpeak[ ! time_cluster_3_postpeak$X == "2020-02-04", ]
+time_cluster_3_postpeak = time_cluster_3_postpeak[ ! time_cluster_3_postpeak$X == "2020-02-05", ]
+time_cluster_3_postpeak = time_cluster_3_postpeak[ ! time_cluster_3_postpeak$X == "2020-02-06", ]
+```
+
+
+```{r}
+write.csv(time_cluster_1, "~/Documents/UC BERKELEY/STATISTICS/STAT 156/Final Project/GitHub/EnvCausal-replication/data/time_cluster_1.csv") 
+write.csv(time_cluster_1_postpeak, "~/Documents/UC BERKELEY/STATISTICS/STAT 156/Final Project/GitHub/EnvCausal-replication/data/time_cluster_1_postpeak.csv") 
+write.csv(time_cluster_1_spread, "~/Documents/UC BERKELEY/STATISTICS/STAT 156/Final Project/GitHub/EnvCausal-replication/data/time_cluster_1_spread.csv") 
+
+write.csv(time_cluster_2, "~/Documents/UC BERKELEY/STATISTICS/STAT 156/Final Project/GitHub/EnvCausal-replication/data/time_cluster_2.csv") 
+write.csv(time_cluster_2_postpeak, "~/Documents/UC BERKELEY/STATISTICS/STAT 156/Final Project/GitHub/EnvCausal-replication/data/time_cluster_2_postpeak.csv") 
+write.csv(time_cluster_2_spread, "~/Documents/UC BERKELEY/STATISTICS/STAT 156/Final Project/GitHub/EnvCausal-replication/data/time_cluster_2_spread.csv") 
+
+write.csv(time_cluster_3, "~/Documents/UC BERKELEY/STATISTICS/STAT 156/Final Project/GitHub/EnvCausal-replication/data/time_cluster_3.csv") 
+write.csv(time_cluster_3_postpeak, "~/Documents/UC BERKELEY/STATISTICS/STAT 156/Final Project/GitHub/EnvCausal-replication/data/time_cluster_3_postpeak.csv") 
+write.csv(time_cluster_3_spread, "~/Documents/UC BERKELEY/STATISTICS/STAT 156/Final Project/GitHub/EnvCausal-replication/data/time_cluster_3_spread.csv") 
+```
+
 
