@@ -1,2 +1,2 @@
-param_learning_rate,param_max_depth,param_min_child_weight,param_n_estimators,mean_test_score
-0.01,2,8,25,-1.3239320276248225
+param_learning_rate,param_n_estimators,mean_test_score
+0.05,300,0.7648814000057552
