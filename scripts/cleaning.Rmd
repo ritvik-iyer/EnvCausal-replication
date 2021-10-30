@@ -30,11 +30,11 @@ summary(dat)
 ```{r}
 levels(dat$City) = c(levels(dat$City), "Xiamen", "Lhasa", "Urumqi", "Chongqing", "Hohhot", "Changsha", "Foshan", "Bengbu", "Luliang")
 dat$City[9] = "Xiamen"
-dat$City[14] = "Lhasa"
-dat$City[18] = "Urumqi"
+dat$City[14] = "Lasa"
+dat$City[18] = "Wulumuqi"
 dat$City[21] = "Chongqing"
 dat$City[41] = "Luliang"
-dat$City[75] = "Hohhot"
+dat$City[75] = "Huhehaote"
 dat$City[152] = "Changsha"
 dat$City[161] = "Foshan"
 dat$City[103] = "Bengbu"
@@ -88,7 +88,17 @@ write.csv(dat, "~/Documents/UC BERKELEY/STATISTICS/STAT 156/Final Project/GitHub
 
 
 ```{r}
-envdat = read.csv("~/Documents/UC BERKELEY/STATISTICS/STAT 156/Final Project/EnvCausal-main/data/time_series/3_day_moving_average/df_m3.csv")
+envdat_1 = read.csv("~/Documents/UC_BERKELEY/STATISTICS/STAT_156/Final_Project/EnvCausal-main/data/time_series/3_day_moving_average/df_m3.csv")
+
+envdat = read.csv("~/Documents/UC BERKELEY/STATISTICS/STAT 156/Final Project/GitHub/EnvCausal-replication/data/envdat_translated.csv")
+
+levels(envdat$City) = c(levels(envdat$City), "Suzhou_1", "Taizhou_1", "Xiamen", "Lhasa", "Urumqi", "Chongqing", "Hohhot", "Changsha", "Foshan", "Bengbu", "Luliang")
+
+envdat$City[3901:3978] = "Suzhou_1"
+envdat$City[11311:11388] = "Chongqing"
+envdat$City[1951:2028] = "Xiamen"
+
+envdat$days = c(rep(0:77, 166))
 ```
 
 ```{r}
@@ -101,17 +111,17 @@ dat$GDPpc = dat$GDPpc*6.91
 cluster1 = filter(dat, City == "Beijing" | City == "Shanghai" | City == "Chongqing" |City ==  "Suzhou" | City == "Chengdu" |City ==  "Guangzhou" | City ==  "Shenzhen")
 cluster1 = cluster1[-5, ]
 
-# write.csv(cluster1, "~/Documents/UC BERKELEY/STATISTICS/STAT 156/Final Project/GitHub/EnvCausal-replication/data/cluster1.csv")
+write.csv(cluster1, "~/Documents/UC BERKELEY/STATISTICS/STAT 156/Final Project/GitHub/EnvCausal-replication/data/cluster1.csv")
 
 summary(cluster1)
 ```
 
 ```{r}
-cluster2 = filter(dat, City == "Shenyang" | City == "Dalian" | City == "Fuzhou" |City ==  "Xiamen" | City == "Nanning" |City ==  "Haikou" | City ==  "Guiyang" | City == "Kunming" | City == "Lhasa" |
- City == "Lanzhou" |City ==  "Xining" | City ==  "Yinchuan" | City == "Urumqi" | City == "Tianjin" | City == "Shijiazhuang" |    City == "Taiyuan" |City ==  "Jinan" | City ==  "Qingdao" | City == "Zhengzhou" | City == "Hohhot" |    City == "Baotou" |City ==  "Nanjing" | City ==  "Wuxi" | City == "Changzhou" | City == "Hangzhou" |     City == "Ningbo" |City ==  "Wenzhou" | City ==  "Shaoxing" | City == "Jiaxing" | City == "Jinhua" |     City == "Hefei" |City ==  "Xian" | City ==  "Tongchuan" | City == "Nanchang" | City == "Changsha" |
+cluster2 = filter(dat, City == "Shenyang" | City == "Dalian" | City == "Fuzhou" |City ==  "Xiamen" | City == "Nanning" |City ==  "Haikou" | City ==  "Guiyang" | City == "Kunming" | City == "Lasa" |
+ City == "Lanzhou" |City ==  "Xining" | City ==  "Yinchuan" | City == "Wulumuqi" | City == "Tianjin" | City == "Shijiazhuang" |    City == "Taiyuan" |City ==  "Jinan" | City ==  "Qingdao" | City == "Zhengzhou" | City == "Huhehaote" |    City == "Baotou" |City ==  "Nanjing" | City ==  "Wuxi" | City == "Changzhou" | City == "Hangzhou" |     City == "Ningbo" |City ==  "Wenzhou" | City ==  "Shaoxing" | City == "Jiaxing" | City == "Jinhua" |     City == "Hefei" |City ==  "Xian" | City ==  "Tongchuan" | City == "Nanchang" | City == "Changsha" |
 City == "Zhuhai" |City ==  "Foshan" | City ==  "Huizhou" | City == "Dongguan" | City == "Zhongshan")
  
-# write.csv(cluster2, "~/Documents/UC BERKELEY/STATISTICS/STAT 156/Final Project/GitHub/EnvCausal-replication/data/cluster2.csv") 
+write.csv(cluster2, "~/Documents/UC BERKELEY/STATISTICS/STAT 156/Final Project/GitHub/EnvCausal-replication/data/cluster2.csv") 
 
 summary(cluster2)
   
@@ -120,117 +130,121 @@ summary(cluster2)
 ```{r}
 cluster3 = dat[-c(1, 2, 8:23, 34, 45, 46, 58, 75:78, 80, 81, 90:93, 95, 96, 101, 117, 120, 122, 147, 152, 158, 159, 160, 161, 165, 164, 166), ]
 
-# write.csv(cluster3, "~/Documents/UC BERKELEY/STATISTICS/STAT 156/Final Project/GitHub/EnvCausal-replication/data/cluster3.csv") 
+write.csv(cluster3, "~/Documents/UC BERKELEY/STATISTICS/STAT 156/Final Project/GitHub/EnvCausal-replication/data/cluster3.csv") 
 
 summary(cluster3)
 ```
 
 ```{r}
-write.csv(envdat, "~/Documents/UC BERKELEY/STATISTICS/STAT 156/Final Project/GitHub/EnvCausal-replication/data/envdat.csv") 
+write.csv(envdat_1, "~/Documents/UC BERKELEY/STATISTICS/STAT 156/Final Project/GitHub/EnvCausal-replication/data/envdat.csv") 
+
+write.csv(envdat, "~/Documents/UC BERKELEY/STATISTICS/STAT 156/Final Project/GitHub/EnvCausal-replication/data/envdat_translated.csv") 
+
 ```
 
 ```{r}
-time_cluster_1 = envdat[envdat$X.1== "上海", ]
-time_cluster_1 = rbind(time_cluster_1, envdat[envdat$X.1== "重庆", ])
-time_cluster_1 = rbind(time_cluster_1, envdat[envdat$X.1== "苏州", ])
-time_cluster_1 = rbind(time_cluster_1, envdat[envdat$X.1== "北京", ])
-time_cluster_1 = rbind(time_cluster_1, envdat[envdat$X.1== "成都", ])
-time_cluster_1 = rbind(time_cluster_1, envdat[envdat$X.1== "广州", ])
-time_cluster_1 = rbind(time_cluster_1, envdat[envdat$X.1== "深圳", ])
+time_cluster_1 = envdat[envdat$City== "Shanghai", ]
+time_cluster_1 = rbind(time_cluster_1, envdat[envdat$City== "Chongqing", ])
+time_cluster_1 = rbind(time_cluster_1, envdat[envdat$City== "Suzhou", ])
+time_cluster_1 = rbind(time_cluster_1, envdat[envdat$City== "Beijing", ])
+time_cluster_1 = rbind(time_cluster_1, envdat[envdat$City== "Chengdu", ])
+time_cluster_1 = rbind(time_cluster_1, envdat[envdat$City== "Guangzhou", ])
+time_cluster_1 = rbind(time_cluster_1, envdat[envdat$City== "Shenzhen", ])
 ```
 
 ```{r}
-time_cluster_2 = envdat[envdat$X.1== "沈阳", ]
-time_cluster_2 = rbind(time_cluster_2, envdat[envdat$X.1== "大连", ])
-time_cluster_2 = rbind(time_cluster_2, envdat[envdat$X.1== "福州", ])
-time_cluster_2 = rbind(time_cluster_2, envdat[envdat$X.1== "厦门", ])
-time_cluster_2 = rbind(time_cluster_2, envdat[envdat$X.1== "南宁", ])
-time_cluster_2 = rbind(time_cluster_2, envdat[envdat$X.1== "海口", ])
-time_cluster_2 = rbind(time_cluster_2, envdat[envdat$X.1== "贵阳", ])
-time_cluster_2 = rbind(time_cluster_2, envdat[envdat$X.1== "昆明", ])
-time_cluster_2 = rbind(time_cluster_2, envdat[envdat$X.1== "拉萨", ])
-time_cluster_2 = rbind(time_cluster_2, envdat[envdat$X.1== "兰州", ])
-time_cluster_2 = rbind(time_cluster_2, envdat[envdat$X.1== "西宁", ])
-time_cluster_2 = rbind(time_cluster_2, envdat[envdat$X.1== "银川", ])
-time_cluster_2 = rbind(time_cluster_2, envdat[envdat$X.1== "乌鲁木齐", ])
-time_cluster_2 = rbind(time_cluster_2, envdat[envdat$X.1== "天津", ])
-time_cluster_2 = rbind(time_cluster_2, envdat[envdat$X.1== "石家庄", ])
-time_cluster_2 = rbind(time_cluster_2, envdat[envdat$X.1== "太原", ])
-time_cluster_2 = rbind(time_cluster_2, envdat[envdat$X.1== "济南", ])
-time_cluster_2 = rbind(time_cluster_2, envdat[envdat$X.1== "青岛", ])
-time_cluster_2 = rbind(time_cluster_2, envdat[envdat$X.1== "郑州", ])
-time_cluster_2 = rbind(time_cluster_2, envdat[envdat$X.1== "呼和浩特", ])
-time_cluster_2 = rbind(time_cluster_2, envdat[envdat$X.1== "包头", ])
-time_cluster_2 = rbind(time_cluster_2, envdat[envdat$X.1== "南京", ])
-time_cluster_2 = rbind(time_cluster_2, envdat[envdat$X.1== "无锡", ])
-time_cluster_2 = rbind(time_cluster_2, envdat[envdat$X.1== "常州", ])
-time_cluster_2 = rbind(time_cluster_2, envdat[envdat$X.1== "杭州", ])
-time_cluster_2 = rbind(time_cluster_2, envdat[envdat$X.1== "宁波", ])
-time_cluster_2 = rbind(time_cluster_2, envdat[envdat$X.1== "温州", ])
-time_cluster_2 = rbind(time_cluster_2, envdat[envdat$X.1== "绍兴", ])
-time_cluster_2 = rbind(time_cluster_2, envdat[envdat$X.1== "金华", ])
-time_cluster_2 = rbind(time_cluster_2, envdat[envdat$X.1== "嘉兴", ])
-time_cluster_2 = rbind(time_cluster_2, envdat[envdat$X.1== "合肥", ])
-time_cluster_2 = rbind(time_cluster_2, envdat[envdat$X.1== "西安", ])
-time_cluster_2 = rbind(time_cluster_2, envdat[envdat$X.1== "铜川", ])
-time_cluster_2 = rbind(time_cluster_2, envdat[envdat$X.1== "南昌", ])
-time_cluster_2 = rbind(time_cluster_2, envdat[envdat$X.1== "长沙", ])
-time_cluster_2 = rbind(time_cluster_2, envdat[envdat$X.1== "珠海", ])
-time_cluster_2 = rbind(time_cluster_2, envdat[envdat$X.1== "佛山", ])
-time_cluster_2 = rbind(time_cluster_2, envdat[envdat$X.1== "惠州", ])
-time_cluster_2 = rbind(time_cluster_2, envdat[envdat$X.1== "东莞", ])
-time_cluster_2 = rbind(time_cluster_2, envdat[envdat$X.1== "中山", ])
+time_cluster_2 = envdat[envdat$City== "Shenyang", ]
+time_cluster_2 = rbind(time_cluster_2, envdat[envdat$City== "Dalian", ])
+time_cluster_2 = rbind(time_cluster_2, envdat[envdat$City== "Fuzhou", ])
+time_cluster_2 = rbind(time_cluster_2, envdat[envdat$City== "Xiamen", ])
+time_cluster_2 = rbind(time_cluster_2, envdat[envdat$City== "Nanning", ])
+time_cluster_2 = rbind(time_cluster_2, envdat[envdat$City== "Haikou", ])
+time_cluster_2 = rbind(time_cluster_2, envdat[envdat$City== "Guiyang", ])
+time_cluster_2 = rbind(time_cluster_2, envdat[envdat$City== "Kunming", ])
+time_cluster_2 = rbind(time_cluster_2, envdat[envdat$City== "Lasa", ])
+time_cluster_2 = rbind(time_cluster_2, envdat[envdat$City== "Lanzhou", ])
+time_cluster_2 = rbind(time_cluster_2, envdat[envdat$City== "Xining", ])
+time_cluster_2 = rbind(time_cluster_2, envdat[envdat$City== "Yinchuan", ])
+time_cluster_2 = rbind(time_cluster_2, envdat[envdat$City== "Wulumuqi", ])
+time_cluster_2 = rbind(time_cluster_2, envdat[envdat$City== "Tianjin", ])
+time_cluster_2 = rbind(time_cluster_2, envdat[envdat$City== "Shijiazhuang", ])
+time_cluster_2 = rbind(time_cluster_2, envdat[envdat$City== "Taiyuan", ])
+time_cluster_2 = rbind(time_cluster_2, envdat[envdat$City== "Jinan", ])
+time_cluster_2 = rbind(time_cluster_2, envdat[envdat$City== "Qingdao", ])
+time_cluster_2 = rbind(time_cluster_2, envdat[envdat$City== "Zhengzhou", ])
+time_cluster_2 = rbind(time_cluster_2, envdat[envdat$City== "Huhehaote", ])
+time_cluster_2 = rbind(time_cluster_2, envdat[envdat$City== "Baotou", ])
+time_cluster_2 = rbind(time_cluster_2, envdat[envdat$City== "Nanjing", ])
+time_cluster_2 = rbind(time_cluster_2, envdat[envdat$City== "Wuxi", ])
+time_cluster_2 = rbind(time_cluster_2, envdat[envdat$City== "Changzhou", ])
+time_cluster_2 = rbind(time_cluster_2, envdat[envdat$City== "Hangzhou", ])
+time_cluster_2 = rbind(time_cluster_2, envdat[envdat$City== "Ningbo", ])
+time_cluster_2 = rbind(time_cluster_2, envdat[envdat$City== "Wenzhou", ])
+time_cluster_2 = rbind(time_cluster_2, envdat[envdat$City== "Shaoxing", ])
+time_cluster_2 = rbind(time_cluster_2, envdat[envdat$City== "Jinhua", ])
+time_cluster_2 = rbind(time_cluster_2, envdat[envdat$City== "Jiaxing", ])
+time_cluster_2 = rbind(time_cluster_2, envdat[envdat$City== "Hefei", ])
+time_cluster_2 = rbind(time_cluster_2, envdat[envdat$City== "Xian", ])
+time_cluster_2 = rbind(time_cluster_2, envdat[envdat$City== "Tongchuan", ])
+time_cluster_2 = rbind(time_cluster_2, envdat[envdat$City== "Nanchang", ])
+time_cluster_2 = rbind(time_cluster_2, envdat[envdat$City== "Changsha", ])
+time_cluster_2 = rbind(time_cluster_2, envdat[envdat$City== "Zhuhai", ])
+time_cluster_2 = rbind(time_cluster_2, envdat[envdat$City== "Foshan", ])
+time_cluster_2 = rbind(time_cluster_2, envdat[envdat$City== "Huizhou", ])
+time_cluster_2 = rbind(time_cluster_2, envdat[envdat$City== "Dongguan", ])
+time_cluster_2 = rbind(time_cluster_2, envdat[envdat$City== "Zhongshan", ])
 ```
 
 ```{r}
 time_cluster_3 = envdat
-time_cluster_3 = time_cluster_3[! time_cluster_3$X.1== "上海", ]
-time_cluster_3 = time_cluster_3[! time_cluster_3$X.1== "重庆", ]
-time_cluster_3 = time_cluster_3[! time_cluster_3$X.1== "苏州", ]
-time_cluster_3 = time_cluster_3[! time_cluster_3$X.1== "北京", ]
-time_cluster_3 = time_cluster_3[! time_cluster_3$X.1== "成都", ]
-time_cluster_3 = time_cluster_3[! time_cluster_3$X.1== "广州", ]
-time_cluster_3 = time_cluster_3[! time_cluster_3$X.1== "深圳", ]
-time_cluster_3 = time_cluster_3[! time_cluster_3$X.1== "沈阳", ]
-time_cluster_3 = time_cluster_3[! time_cluster_3$X.1== "大连", ]
-time_cluster_3 = time_cluster_3[! time_cluster_3$X.1== "福州", ]
-time_cluster_3 = time_cluster_3[! time_cluster_3$X.1== "厦门", ]
-time_cluster_3 = time_cluster_3[! time_cluster_3$X.1== "南宁", ]
-time_cluster_3 = time_cluster_3[! time_cluster_3$X.1== "海口", ]
-time_cluster_3 = time_cluster_3[! time_cluster_3$X.1== "贵阳", ]
-time_cluster_3 = time_cluster_3[! time_cluster_3$X.1== "昆明", ]
-time_cluster_3 = time_cluster_3[! time_cluster_3$X.1== "拉萨", ]
-time_cluster_3 = time_cluster_3[! time_cluster_3$X.1== "兰州", ]
-time_cluster_3 = time_cluster_3[! time_cluster_3$X.1== "西宁", ]
-time_cluster_3 = time_cluster_3[! time_cluster_3$X.1== "银川", ]
-time_cluster_3 = time_cluster_3[! time_cluster_3$X.1== "乌鲁木齐", ]
-time_cluster_3 = time_cluster_3[! time_cluster_3$X.1== "天津", ]
-time_cluster_3 = time_cluster_3[! time_cluster_3$X.1== "石家庄", ]
-time_cluster_3 = time_cluster_3[! time_cluster_3$X.1== "太原", ]
-time_cluster_3 = time_cluster_3[! time_cluster_3$X.1== "济南", ]
-time_cluster_3 = time_cluster_3[! time_cluster_3$X.1== "青岛", ]
-time_cluster_3 = time_cluster_3[! time_cluster_3$X.1== "郑州", ]
-time_cluster_3 = time_cluster_3[! time_cluster_3$X.1== "呼和浩特", ]
-time_cluster_3 = time_cluster_3[! time_cluster_3$X.1== "包头", ]
-time_cluster_3 = time_cluster_3[! time_cluster_3$X.1== "南京", ]
-time_cluster_3 = time_cluster_3[! time_cluster_3$X.1== "无锡", ]
-time_cluster_3 = time_cluster_3[! time_cluster_3$X.1== "常州", ]
-time_cluster_3 = time_cluster_3[! time_cluster_3$X.1== "杭州", ]
-time_cluster_3 = time_cluster_3[! time_cluster_3$X.1== "宁波", ]
-time_cluster_3 = time_cluster_3[! time_cluster_3$X.1== "温州", ]
-time_cluster_3 = time_cluster_3[! time_cluster_3$X.1== "绍兴", ]
-time_cluster_3 = time_cluster_3[! time_cluster_3$X.1== "金华", ]
-time_cluster_3 = time_cluster_3[! time_cluster_3$X.1== "嘉兴", ]
-time_cluster_3 = time_cluster_3[! time_cluster_3$X.1== "合肥", ]
-time_cluster_3 = time_cluster_3[! time_cluster_3$X.1== "西安", ]
-time_cluster_3 = time_cluster_3[! time_cluster_3$X.1== "铜川", ]
-time_cluster_3 = time_cluster_3[! time_cluster_3$X.1== "南昌", ]
-time_cluster_3 = time_cluster_3[! time_cluster_3$X.1== "长沙", ]
-time_cluster_3 = time_cluster_3[! time_cluster_3$X.1== "珠海", ]
-time_cluster_3 = time_cluster_3[! time_cluster_3$X.1== "佛山", ]
-time_cluster_3 = time_cluster_3[! time_cluster_3$X.1== "惠州", ]
-time_cluster_3 = time_cluster_3[! time_cluster_3$X.1== "东莞", ]
-time_cluster_3 = time_cluster_3[! time_cluster_3$X.1== "中山", ]
+time_cluster_3 = time_cluster_3[! time_cluster_3$City== "Shenyang", ]
+time_cluster_3 = time_cluster_3[! time_cluster_3$City== "Dalian", ]
+time_cluster_3 = time_cluster_3[! time_cluster_3$City== "Fuzhou", ]
+time_cluster_3 = time_cluster_3[! time_cluster_3$City== "Xiamen", ]
+time_cluster_3 = time_cluster_3[! time_cluster_3$City== "Nanning", ]
+time_cluster_3 = time_cluster_3[! time_cluster_3$City== "Haikou", ]
+time_cluster_3 = time_cluster_3[! time_cluster_3$City== "Guiyang", ]
+time_cluster_3 = time_cluster_3[! time_cluster_3$City== "Kunming", ]
+time_cluster_3 = time_cluster_3[! time_cluster_3$City== "Lasa", ]
+time_cluster_3 = time_cluster_3[! time_cluster_3$City== "Lanzhou", ]
+time_cluster_3 = time_cluster_3[! time_cluster_3$City== "Xining", ]
+time_cluster_3 = time_cluster_3[! time_cluster_3$City== "Yinchuan", ]
+time_cluster_3 = time_cluster_3[! time_cluster_3$City== "Wulumuqi", ]
+time_cluster_3 = time_cluster_3[! time_cluster_3$City== "Tianjin", ]
+time_cluster_3 = time_cluster_3[! time_cluster_3$City== "Shijiazhuang", ]
+time_cluster_3 = time_cluster_3[! time_cluster_3$City== "Taiyuan", ]
+time_cluster_3 = time_cluster_3[! time_cluster_3$City== "Jinan", ]
+time_cluster_3 = time_cluster_3[! time_cluster_3$City== "Qingdao", ]
+time_cluster_3 = time_cluster_3[! time_cluster_3$City== "Zhengzhou", ]
+time_cluster_3 = time_cluster_3[! time_cluster_3$City== "Huhehaote", ]
+time_cluster_3 = time_cluster_3[! time_cluster_3$City== "Baotou", ]
+time_cluster_3 = time_cluster_3[! time_cluster_3$City== "Nanjing", ]
+time_cluster_3 = time_cluster_3[! time_cluster_3$City== "Wuxi", ]
+time_cluster_3 = time_cluster_3[! time_cluster_3$City== "Changzhou", ]
+time_cluster_3 = time_cluster_3[! time_cluster_3$City== "Hangzhou", ]
+time_cluster_3 = time_cluster_3[! time_cluster_3$City== "Ningbo", ]
+time_cluster_3 = time_cluster_3[! time_cluster_3$City== "Wenzhou", ]
+time_cluster_3 = time_cluster_3[! time_cluster_3$City== "Shaoxing", ]
+time_cluster_3 = time_cluster_3[! time_cluster_3$City== "Jinhua", ]
+time_cluster_3 = time_cluster_3[! time_cluster_3$City== "Jiaxing", ]
+time_cluster_3 = time_cluster_3[! time_cluster_3$City== "Hefei", ]
+time_cluster_3 = time_cluster_3[! time_cluster_3$City== "Xian", ]
+time_cluster_3 = time_cluster_3[! time_cluster_3$City== "Tongchuan", ]
+time_cluster_3 = time_cluster_3[! time_cluster_3$City== "Nanchang", ]
+time_cluster_3 = time_cluster_3[! time_cluster_3$City== "Changsha", ]
+time_cluster_3 = time_cluster_3[! time_cluster_3$City== "Zhuhai", ]
+time_cluster_3 = time_cluster_3[! time_cluster_3$City== "Foshan", ]
+time_cluster_3 = time_cluster_3[! time_cluster_3$City== "Huizhou", ]
+time_cluster_3 = time_cluster_3[! time_cluster_3$City== "Dongguan", ]
+time_cluster_3 = time_cluster_3[! time_cluster_3$City== "Zhongshan", ]
+time_cluster_3 = time_cluster_3[! time_cluster_3$City== "Chongqing", ]
+time_cluster_3 = time_cluster_3[! time_cluster_3$City== "Suzhou", ]
+time_cluster_3 = time_cluster_3[! time_cluster_3$City== "Beijing", ]
+time_cluster_3 = time_cluster_3[! time_cluster_3$City== "Chengdu", ]
+time_cluster_3 = time_cluster_3[! time_cluster_3$City== "Guangzhou", ]
+time_cluster_3 = time_cluster_3[! time_cluster_3$City== "Shenzhen", ]
+time_cluster_3 = time_cluster_3[! time_cluster_3$City== "Shanghai", ]
+time_cluster_3$City[time_cluster_3$City == "Suzhou_1"] = "Suzhou"
 ```
 
 ```{r}
