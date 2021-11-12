@@ -1,0 +1,37 @@
+---
+title: "Stat 156 Final Project Part 3: Replicating the Robustness Chekcs"
+author: "Ritvik Iyer and Samuel Gao"
+date: "11/12/2021"
+output: pdf_document
+header-includes:
+  - \usepackage{booktabs}
+  - \usepackage[utf8]{inputenc}
+  - \usepackage{setspace}
+  - \usepackage{graphicx}
+  - \usepackage{rotating}
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Section 1: Summary of Methodology   
+
+In the paper, the author used two refutation methods to check for the robustness of the results- random common cause (RCC) and placebo treatment (PT). The random common cause treatment adds an independent noise variable as a covariate to the data set and tests the causal effects of the data set. If the relationship is indeed causal, the results stemmed from the treatment should still be relatively stable. Under the placebo treatment test, the tested treatment variable is replaced by noise values instead of the original value, and a causal relationship is estimated again. The effects estimated under the placebo treatment should be 0 instead of the original values.
+
+With the above testing methods, the author utilized four refutation criterions. The first criterion is for the treatment variable to pass both the placebo treatmment test and the RCC test. More specifically, in order for a treatment variable to be considered "passed", its deviation from the original estimated value under the RCC test must be under 10% variance while the results under the placebo treatment test must not be significantly different from 0. If both of these tests are passed, then additional three criterions were established by the authors to further enhance the robustness checks. The other three criterions are thresholds under the RCC test, where the deviations are set at 5%, 1% and 0.5% of the variance, indicating increasing strictness of the test. The authors mandate that a treatment variable pass all four levels of robustness checks in order for a treatment varaible to be considered robust enough.
+
+Under the above-mentioned refutation methods, the wide majority of the estimated treatment variables were refuted by the authors. Looking at the different air pollution factors, PM10 in the cluster 3 spreading phase passed the 1% threshold refutation with a positive ATE value but did not pass the final refutation. For PM2.5, two potential causal effects- one for cluster 2 overall and a second one for cluster 2 during the postpeak phase both did not pass the 1% refutation test. In terms of CO, the cluster 3 postpeak phase passed the initial refutation test but failed at the 5% threshold test, while the SO2 treatment for cluster 3 spreading phase passed the initial and 5% refutation tests but failed at the 1% threshold level. Analyzing meteorological relationship, most of the relationships failed at the 5% level of refutation which indicated that they are most likely insignificant from the authors' perspective. However, one result did pass all of the refutation level tests- air temperature in the cluster 2 spreading phase. This causal effect passed the final refutation test with a causal effect of 0.041, which approximately indicates that given a 1 degree Celcius increase in temperature, this effect increases the newly confirmed cases for cluster 2 during the spreading phase by 0.183 after adjusting for the normalizations. However the authors do note that the final RCC refutation test was passed by 0.00498, which is very cluse to the threshold of 0.005. The authors finally comments that though this causal relationship cannot be ruled out, it can be generally said that from their analysis, enviornmental factors did not generally have an exacerbation impact on the COVID-19  pandemic in the selected Chinese cities during the period selected. 
+
+\newpage 
+# Figures 
+
+\newpage 
+\begin{thebibliography}{9}
+
+\end{thebibliography}
+
+\newpage 
+
+# Code Appendix 
+
