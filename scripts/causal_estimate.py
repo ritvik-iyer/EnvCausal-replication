@@ -2,11 +2,6 @@ import dowhy
 import econml
 
 def ate_estimate(treatment, data, outcome, causal_graph):
-    inspect_datasets = True
-    inspect_models = True
-    inspect_identified_estimands = True
-    inspect_estimates = True
-    inspect_refutations = True
     dowhy.causal_refuter.CausalRefuter.DEFAULT_NUM_SIMULATIONS = 100
     dataset = data
     causal_graph = causal_graph
@@ -47,3 +42,25 @@ def ate_estimate(treatment, data, outcome, causal_graph):
      #print(estimate_forest.value)
     #print("########################################################################################################")
     return li_estimate, forest_estimate
+
+def ate_estimate_refutation(treatment, data, outcome, causal_graph, model_type='nonlinear', refutation_type='RCC'):
+    dowhy.causal_refuter.CausalRefuter.DEFAULT_NUM_SIMULATIONS = 100
+    dataset = data
+    causal_graph = causal_graph
+    model = dowhy.CausalModel(data = dataset,
+                        treatment = treatment,
+                        outcome = outcome,
+                        graph = causal_graph.replace("\n", " "))
+    estimand = model.identify_effect(proceed_when_unidentifiable=True)
+    if model_type == 'nonlinear':
+        estimate = model.estimate_effect(estimand,method_name ="backdoor.econml.orf.DMLOrthoForest",
+                                         method_params = {"init_params":{"n_jobs":-1},"fit_params":{}})
+    else:
+        estimate = model.estimate_effect(estimand,method_name = "backdoor.linear_regression",
+                                         method_params = None)
+    if refutation_type == 'RCC':
+        refutation = model.refute_estimate(estimand, estimate, method_name='random_common_cause')
+    else: 
+        refutation = model.refute_estimate(estimand, estimate, method_name='placebo_treatment_refuter')
+    return estimate, refutation 
+    
