@@ -372,6 +372,9 @@ write.csv(time_cluster_2_spread, "~/Documents/UC BERKELEY/STATISTICS/STAT 156/Fi
 write.csv(time_cluster_3, "~/Documents/UC BERKELEY/STATISTICS/STAT 156/Final Project/GitHub/EnvCausal-replication/data/time_cluster_3.csv") 
 write.csv(time_cluster_3_postpeak, "~/Documents/UC BERKELEY/STATISTICS/STAT 156/Final Project/GitHub/EnvCausal-replication/data/time_cluster_3_postpeak.csv") 
 write.csv(time_cluster_3_spread, "~/Documents/UC BERKELEY/STATISTICS/STAT 156/Final Project/GitHub/EnvCausal-replication/data/time_cluster_3_spread.csv") 
+
+write.csv(cities, "~/Documents/UC BERKELEY/STATISTICS/STAT 156/Final Project/GitHub/EnvCausal-replication/data/cities.csv") 
+
 ```
 
 
