@@ -457,6 +457,9 @@ all_dat[all_dat$City == cleaned$City[i], ]$PRPER = cleaned$Prim.[i]
 all_dat[all_dat$City == cleaned$City[i], ]$SECPER = cleaned$Sec.[i]
 all_dat[all_dat$City == cleaned$City[i], ]$TERPEC = cleaned$Tert.[i]
 }
+
+write.csv(all_dat, "~/Documents/UC BERKELEY/STATISTICS/STAT 156/Final Project/GitHub/EnvCausal-replication/data/all_dat.csv") 
+
 ```
 
 ```{r}
