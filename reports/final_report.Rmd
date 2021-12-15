@@ -19,13 +19,11 @@ knitr::opts_chunk$set(echo = TRUE)
 
 # I. Introduction and Summary 
 
-In the paper \textit{Machine Learning-Aided Causal Inference Framework for Environmental Data Analysis: A COVID-19 Case Study} \cite{3}, Kang et. al explore the causal effect of environmental factors on COVID-19 severity. Using a combination of “snapshot” socio-economic indicators alongside time-series observations for 166 Chinese cities over a 76-day period from January to April 2020, the authors construct structural causal models (SCMs) to estimate causal relationships. After performing a series of robustness checks, the authors find that the vast majority (89 out of 90) of factor-effect relationships have no causal effect on COVID-19 severity. This paper provides two main conclusions: First, the specified environmental factors were unlikely to worsen the COVID-19 pandemic of 2020 and second, a combination of machine learning methods for dimensionality reduction and feature selection alongside structural causal models provide more robust conclusions than previous methods when investigating causation in the context of observational data. 
+In the paper \textit{Machine Learning-Aided Causal Inference Framework for Environmental Data Analysis: A COVID-19 Case Study} \cite{3}, Kang et.al explore the causal effect of environmental factors on COVID-19 severity. Using a combination of “snapshot” socio-economic indicators alongside time-series observations for 166 Chinese cities over a 76-day period from January to April 2020, the authors construct structural causal models (SCMs) to estimate causal relationships. After performing a series of robustness checks, the authors find that the vast majority (89 out of 90) of factor-effect relationships have no causal effect on COVID-19 severity. This paper provides two main conclusions: First, the specified environmental factors were unlikely to worsen the COVID-19 pandemic of 2020 and second, a combination of machine learning methods for dimensionality reduction and feature selection alongside structural causal models provide more robust conclusions than previous methods when investigating causation in the context of observational data. 
 
 # II. Datasets and Summary Statistics 
 
 For data cleaning, we obtained the datasets from the authors, compared them with the real data, and corrected mistakes. As the data were collected from hundreds of different sources, we decided that determining the accuracy of the features created by the authors was more important (and feasible) than re-constructing the data set from every source. As a result, we spent a larger amount of time on data quality checks. For instance, while calculating GDP, the total GDP should equal the combination of the primary, secondary and tertiary sectors. Tests were performed to examine if the above identity holds and mistakes were corrected to generate the proper numbers. We found a total of 4 typos that were significant enough to need correction. The numbers were compared with the official government statistics to correct the typos. In addition, certain columns of the summary statistics were expressed in different units and discrepancies were corrected. For example, the GDP data collected was quoted in RMB, while the summary statistics from the author used USD. Using an exchange rate from 2019 of 6.91 RMB to 1 USD, GDP figures were converted to the USD equivalency and summary statistics were reported using converted figures. Other data corrections involved proportion to percent conversions and per capita statistics being scaled correctly. Lastly, the data were parsed into three clusters to represent the relative sizes of the cities. The first cluster is “Megacities” which includes some of the largest cities in China, while the second and third clusters are “Major Cities” and “Common Cities”, respectively. 
-
-Cleaning the COVID data set has proven to be the most challenging, since the process to clean the data will continue even after this project deadline. The case numbers were crosschecked with a dataset from Harvard Dataverse, and discrepancies were noticed on the 3 day moving sums. For example, the data on the city Fuzhou utilized 3 day moving sums at certain spots, while it used 2 day moving sums at other spots. The data would need to be cleaned and made sure that it is consistent in order for the future analyses to be more accurate. Moving forward, we will clean the data from Harvard Dataverse and apply a consistent 3 day moving average. 
 
 We have placed the reproduced summary statistics figures in the Appendix. The summary statistics tables we have reproduced are originally from Table S1 and S3 in the supplemental information paper \cite{2}. From Table 1, we observe a large spread (e.g. SD, IQR) in many variables, including Population, City Area, and GDP. Looking closer at the quartiles and extreme values of these variables, we can infer that this population of cities is not homogeneous. For instance, the difference between 75th percentile GDP and the min GDP is far smaller than the difference between the max GDP and the 75th percentile. This suggests that there are clusters of cities which possess common characteristics, which we need to account for when performing causal inference. These differences by city type are summarized in Table 3, where the authors group mega-cities together into Cluster 1, large cities into Cluster 2, and smaller cities into Cluster 3. In this table, we can see that larger versus smaller cities have interesting differences in socio-economic indicators, such as elderly as a percentage of population, population density, and Wuhan (known to be the city of first major outbreak of COVID-19) travelers per thousand population. In contrast to the socio-economic indicators, there is considerably less spread for each environmental factor in the time-series data in Figure 2. This may be because the data is from a 3-day moving average over each variable, which reduces variability by smoothing sudden spikes. Another important point to note is that the statistics in Table 2 are computed over every city and date. Therefore, if we were to segment this data by date or city, it could potentially tell a different story.
 
@@ -66,7 +64,7 @@ In the usage of XGBoost algorithm, the models were trained with the aid of k-fol
 
 After the training is complete, the authors used the total gain and permutation score to interpret the trained models. The total gain score is calculated as the product between a feature's gain score and the frequency of the feature in being used for node splitting when constructing the model, while the permutation score is defined as the decrease of the model performance when a single feature is randomly shuffled. However, the author notes in their paper that a common shortfall of the two metrics is their relative inability to determine whether a feature's contribution is positive or negative, thus the authors further utilized SHAP interaction values to analyze the direction of the feature contribution. 
 
-In our replication, we studied extracted both the total gain and the permutation score for all the sub datasets that we have. The total gain score for all the data (without dividing the data into post peak and spreading phases) is reported in the Appendix as Figure 6, while the permutation importance is reported as Figure 7. For the data that is postpeak, the total gain score and permutation scores are reported are reported as Figure 8 and Figure 9 respectively, while the data that is during the spreading phase is reported in Figure 10 and Figure 11 for the total gain scores and the permutation scores, respectively. Though we cannot definitely say which factors are the "most important", several highlights needs to be made. First, the ACTV effect can be seen as quite important across the board. Particularly, in Figure 7, the permutation importance of the ACTV feature seemingly dominates all the other features for all three clusters. Second, from our results, PRES also seems to be quite an important contributing factor, as its ranking is generally quite high across all the clusters and time periods. With regards to other variables, the feature importance is much more difficult to interpret as their ranking and values shift dramatically across permutation importance vs gain score and across the different clusters/time periods. However, the reader should also note that our results are currently as we were constrained by our limited computational resources, and we were not able to reproduce the results for the SHAP interaction values. 
+In our replication, we extracted both the total gain and the permutation score for all the sub datasets that we have. The total gain score for all the data (without dividing the data into post peak and spreading phases) is reported in the Appendix as Figure 6, while the permutation importance is reported as Figure 7. For the data that is postpeak, the total gain score and permutation scores are reported are reported as Figure 8 and Figure 9 respectively, while the data that is during the spreading phase is reported in Figure 10 and Figure 11 for the total gain scores and the permutation scores, respectively. Though we cannot definitely say which factors are the "most important", several highlights needs to be made. First, the ACTV effect can be seen as quite important across the board. Particularly, in Figure 7, the permutation importance of the ACTV feature seemingly dominates all the other features for all three clusters. Second, from our results, PRES also seems to be quite an important contributing factor, as its ranking is generally quite high across all the clusters and time periods. With regards to other variables, the feature importance is much more difficult to interpret as their ranking and values shift dramatically across permutation importance vs gain score and across the different clusters/time periods. However, the reader should also note that our results are currently as we were constrained by our limited computational resources, and we were not able to reproduce the results for the SHAP interaction values. 
 
 ## Part 3: Structural Causal Model and Treatment Effect Estimation 
 
@@ -98,7 +96,7 @@ In the previous portions of our paper, we have attempted to replicate a paper th
 
 However, there are numerous challenges that exist to analyze the data. The biggest challenge to analyzing the causal effects of the data is that the treatment variable is not well defined for our data set which makes the causal question difficult to formulate. Our "treatment" variables consists of different levels of different environmental factors which cannot be binarized into a 0 and 1 function easily. Fundamentally, the challenge for the question we are addressing is that it is almost impossible to consider an experimental setting where we can change one of the variables while keeping the other covariates constant. Further, given the different levels of environmental factor that we are observing, it is also difficult to state which level should be considered the "treatment" and which level is the "control". Thus the causal question at hand is extremely difficult to formulate under the context of Causal Inference.
 
-[TODO] Add note that in these models, we used the entire data set will all variables (snapshot + time series environmental factors)
+In our analysis, we will analyze the data as a whole, without parsing out the data into different clusters and time periods as the original authors did. We believe that the environmental factors should have the same effect on the number of confirmed cases across cities and time periods if in fact the relationship is causal, hence dividing the data set into different city and time clusters appears to be arbitrary and unnecessary to us.
 
 ## Method 1: Mutliple Regression Model
 
@@ -109,6 +107,8 @@ $$Y_i = \beta_0 + \beta_1 X_{1i} + \beta_2 X_{2i}......\beta_k X_{ki} + u_i, i =
 where $Y_i$ is the outcome of the dependent variable, $X_1$ can be notated as the "treatment" variable that we are interested in, while the other $X$'s are the different covariates that we are controlling for, and $u_i$ is an error term for entry $i$. In our case, the different covariates are the economical and demographic data on this data set, such as GDP, population, hospital beds, etc. while the outcome is the number of newly confirmed COVID cases. 
 
 Interpreting the results, the coefficient $\beta_1$ can be interpreted as the how the number of newly confirmed COVID cases change given changes in the "treatment" variable while controlling for the different covariates. The results of the regressions are shown in Table 8. 
+
+The last column of table 8 reports a regression with all the treatment variables as covariates. In a naive sense, the coefficient for  "TEMP" may be interpreted as the effect of temperature on the number of COVID-19 cases, controlling for different environmental, demographic, and economical factors. However, this column are fundamentally impossible to intrepret as the variables interchange between being a covariate and a treatment, which is impossible given that a varibale cannot be both a covariate and a treatment simultaneously.
 
 However, in order to deepen our understanding of the results and critique the conclusions that we have made, we must consider the basic assumptions of the multiple regression model. The assumptions of the multiple regression models are:
 
@@ -147,6 +147,8 @@ The difference in this approach compared to the simple multiple regression is th
 
 The results from this regression is shown in Table 9. We exclude the interaction terms in the table due to their volume. Only the results for the covariate terms and the treatment terms are reported.
 
+In Table 10, we report results where different environmental factors are treated as covariate terms as well. For example, in the first column, the temperature is seen as the "treatment" while the other environmental factors are treated like covariates, and interaction terms are added between the temperature varaible and the varying environmental variables.
+
 ## Method 3: Fixed Effect Regression 
 
 What the multiple regression model presented earlier does not account for is the characteristics of the cities that are fixed over time. For example, in our data set, demographic and economic indicators are fixed over time. Even though factors such as population, GDP, hospital beds, etc. are fluid over time, government agencies tend to record these data for a given time period given their difficulty in data agglomeration and estimation. The data that this data set contains is from government reports and statistical yearbooks for 2019, and we will assume that the covariate data is constant across the time.
@@ -160,7 +162,7 @@ How the programs run fixed effect regressions is done in two steps. In the first
 
 $$Y_{it} - \bar{Y} = \beta_1(X_{1, it} - \bar{X_{1,i}}) +  \beta_2(X_{2, it} - \bar{X_{2,i}})  + (u_{it} - \bar{u_i})$$
 
-With the above values, OLS regression is ran and $\beta_1$ is estimated. The results of the fixed effects regression for our data set is displayed in the following page as Table 3.
+With the above values, OLS regression is ran and $\beta_1$ is estimated. The results of the fixed effects regression for our data set is displayed in the following page as Table 11.
 
 To more fully interpret the results of the fixed effects regression model, we must again understand the assumptions the model is making. The assumptions are quite close to the assumptions made under the multiple regression model, and are stated below:
 
@@ -190,21 +192,72 @@ In our this re-analysis approach, we attempted to transform the data into a more
 
 For the purposes of this problem, we believed that the matching estimator would be the most appropriate. This is because our causal assumption is that COVID cases in cities on a fixed date are interchangeable, given their covariate information (e.g. population size, GDP, etc.). As such, matching would allow us to generate good quality counterfactuals, rather than algorithmically grouping together cities in an uninterpretable fashion, like the original paper implements. Specifically, the matching process aims to find, for each individual $i$, $K$ counterfactual units to minimize $|| X_j - X_i ||$, where $|| \cdot ||$ is some distance metric (e.g. Mahalanobis distance). In our case, we used $k$-Nearest Neighbor matching with $K = 5$ and Mahalanobis distance as our distance metric to generate matches. Our choice for the number of counterfactual matches was driven by the idea that we wanted to balance between accounting for enough geographical city similarities (suggesting to decrease $K$) and introducing bias due to city-specific characteristics not present in our observed covariates (suggesting to increase $K$). 
 
-The results of the matching estimation process are given in Table 11. In the estimation process, we corrected for matching bias, which is the bias introduced due to discrepancies in the covariate values of units and their matched counterfactuals. This bias is given by $\mathbb{E}[Y(0)|X = X_i] - \mathbb{E}[Y(0)| X = X_j]$ where $||X_i - X_j|| > 0$. As Wong explains \cite{4}, we can correct for this bias by assuming local linearity in the conditional expectation and directly approximate this bias term. This is a reasonable (i.e. much less strong) assumption than assuming linearity across the covariate space with OLS-based ATE estimators. From our results, we can observe that there is a significant time component involved. For example, the ATE estimates of treatments like Pressure, Temperature, and Humidity tend to rise and fall together in groups of 10 days. In addition, we can observe that most of the ATE estimates are close to $0$ and the standard errors are relatively large (relavive to the point estimates), leading to large uncertainty. To get causal effect estimates over the entire timespan, we average the ATE estimates and apply the conservative variance estimator, which adds the variances together. These aggregated results are presented in Table 12. When looking at the 95% Confidence Intervals, we can observe that not a single treatment factor is statisically significant, which agrees with the authors' conclusion on the causal effects of environmental factors. 
+The results of the matching estimation process are given in Table 12. In the estimation process, we corrected for matching bias, which is the bias introduced due to discrepancies in the covariate values of units and their matched counterfactuals. This bias is given by $\mathbb{E}[Y(0)|X = X_i] - \mathbb{E}[Y(0)| X = X_j]$ where $||X_i - X_j|| > 0$. As Wong explains \cite{4}, we can correct for this bias by assuming local linearity in the conditional expectation and directly approximate this bias term. This is a reasonable (i.e. much less strong) assumption than assuming linearity across the covariate space with OLS-based ATE estimators. From our results, we can observe that there is a significant time component involved. For example, the ATE estimates of treatments like Pressure, Temperature, and Humidity tend to rise and fall together in groups of 10 days. In addition, we can observe that most of the ATE estimates are close to $0$ and the standard errors are relatively large (relavive to the point estimates), leading to large uncertainty. To get causal effect estimates over the entire timespan, we average the ATE estimates and apply the conservative variance estimator, which adds the variances together. These aggregated results are presented in Table 12. When looking at the 95% Confidence Intervals, we can observe that not a single treatment factor is statisically significant, which agrees with the authors' conclusion on the causal effects of environmental factors. 
 
 There are two important caveats with this approach. First, the matching estimator assumes unconfoundedness, $Z \indep \{Y(0), Y(1) \} | X$. We are fairly confident that unconfoundedness does not hold in this scenario, as we saw previously that there exists time-based variation, leading us to believe that this was a unaccounted-for variable. In addition, we believe that it would be hard for unconfoundedness to ever be plausible in this set up, since environmental factors cannot reasonably be considered as randomized due to autocorrelation, geographical similarities, and its fundamentally uncontrollable nature. Secondly, the fundamental assumption of causal inference (SUTVA) assumes no spillover effects which is likely violated in this observational setup. As a result, we must take these results with healthy skepticism. In future experiments, we suggest trying to remove the time-component of the data through time-series methods before identifying causal effects. Despite this approach's weaknesses, we still believe that it is reasonable to consider over the author's methodology, which neglects the fundamentals of the causal inference.  
 
 # VI. Conclusion
 
+In our re-analysis of the data, we propose 4 models to estimate the causal effects of the treatment on COVID-19 cases. This approach is quite different than the methods used by the authors in the original paper. Instead, the authors use more of a "toolbox"-type approach in two stages. First, the authors don't define their set of treatment variables a priori. Rather, they fit various machine learning models coupled with interpretation tools (e.g. Feature importance, Permutation scores, SHAP, etc.) which yield the features which are highly predictive of the outcome. Whereas, in our approach, we clearly define which treatment variables we assess at the beginning of the process. Secondly, the authors assume a particular causal graph structure for the basis of their analysis, and try out several different machine learning methods to estimate causal effects within this graph structure. This approach may be problematic because if the causal graph is mis-specified, then the model estimation is obsolete. In addition, the author do not clearly outlay the assumptions behind most of their analysis, where we attempt to identify as clearly as possible the assumptions we are imposing on each of our analysis.
 
+There are other notable differences in the execution of the analysis as well. The original authors separated the dataset into three clusters using Machine Learning methods, while we analyzed the data without considering the data in stratas. Instead, we believe that the multiple regression models and the time series model take into consideration already the variations that may occur due to the different covariates present, and the focus is more put on whether the covariates have been properly controlled for and whether unconfoundedness holds. 
 
+The original authors further analyzed the data by parsing the data into two phases, where they consider one phase to be the "Spreading" phase while the second as the "Postpeak" phase. In our analysis, we also did not take into consideration this factor. We believe that this decision was arbitrary and if there were any true differences across periods, the time fixed effects regression model should account for the differences by design.
 
+In the conclusion reached by the authors, the found virtually no significant effect on any of the treatments, with only 1 passing all of the refutation tests, for which the authors still did not fully express their willingness to confirm it as a causal effect. In our analysis, we share this skepticism with the authors and do not wish any statements that are explicitly causal, as there are many assumptions that need to hold in order for the effects to be actually determined causal. There are many data that we simply do not have access to which may affect the outcomes significantly. So while our analysis did turn out some statistically significant results (3 for the simple multiple regression model, 1 for the multiple regression model with interactions, 5 for the multiple regression model with interactions and treating other environmental factors as covariates, and 5 for the fixed effects regressions), we do caution the reader from making any explicit causal inferences from such results. 
 
+[TODO] Compare the 4 methods??
+
+However, due to the fundamental nature of the data set and the question this is posing, analyzing the data under a causal framework is almost impossible, and the analysis we provide only attempts to answer causal questions in naive ways. First, it is almost impossible to imagine a scenario where an experiment can be performed in order to test the causal effect. It is impossible, and perhaps also ethically immoral, to have one city be under "control" and experience a certain level of pollution, and force another city to be under "treatment" to experience another level of pollution. This fundamental challenge makes the causal question and analysis almost impossible.
+
+In addition, the fundamental assumptions of causal inference, namely SUTVA, or stable unit treatment value assumption, does not hold for this scenario. Spillover effects are definitely very possible for instances of air pollution. For example, if manufacturing from one city relocates to another, then the air pollution in the first city may decrease while the air pollution for the second may increase, hence clearly the air pollution may be dependent on another city. In addition, if two cities are located very close together, then the air pollution from one city may leak into another city and affect their treatment levels as well. Further, as pointed out multiple times in the paper, as the data for air pollution is continuous, it is fundamentally impossible to define what a "stable treatment" is under this framework, as even trying to define a "high" vs "low" level of air pollution, the "treatment" of the city is still varying. 
+
+Given the above critiques, we caution the reader from making any substantial causal inferences from this data set. We suggest the reader to reconsider the causal question that may be at hand and consider whether it may truly be answered in an experimental setting. We further suggest the reader to consider other more advanced and robust methods of causal inference that may take continuous treatment variables into account in a better way. 
 
 \newpage 
 # Figures 
 \newgeometry{margin=0.1cm}
 \centering 
+## Figure 1
+![](report2_figures/pic 8.png)
+
+## Figure 2
+![](report2_figures/pic 9.png)
+
+## Figure 3
+![](report2_figures/pic 10.png)
+
+## Figure 4
+![](report2_figures/pic 11.png)
+
+## Figure 5
+![](report2_figures/pic 12.png)
+
+## Figure 6
+![](report2_figures/pic 2.png)
+
+## Figure 7
+![](report2_figures/pic 3.png)
+
+## Figure 8
+![](report2_figures/pic 4.png)
+
+## Figure 9
+![](report2_figures/pic 5.png)
+
+## Figure 10
+![](report2_figures/pic 6.png)
+
+## Figure 11
+![](report2_figures/pic 7.png)
+
+## Figure 12 Causal Graph for Environmental Factors on COVID Cases
+![](report2_figures/pic.png)
+
+\newpage
+
+# Tables
+
 ## Table 1: Socio-economic "Snapshot" Summary Statistics
 \begin{tabular}{lrrrrrrrr}
 \toprule
@@ -280,38 +333,6 @@ There are two important caveats with this approach. First, the matching estimato
 \bottomrule
 \end{tabular}
 
-## Figure 1
-![](report2_figures/pic 8.png)
-
-## Figure 2
-![](report2_figures/pic 9.png)
-
-## Figure 3
-![](report2_figures/pic 10.png)
-
-## Figure 4
-![](report2_figures/pic 11.png)
-
-## Figure 5
-![](report2_figures/pic 12.png)
-
-## Figure 6
-![](report2_figures/pic 2.png)
-
-## Figure 7
-![](report2_figures/pic 3.png)
-
-## Figure 8
-![](report2_figures/pic 4.png)
-
-## Figure 9
-![](report2_figures/pic 5.png)
-
-## Figure 10
-![](report2_figures/pic 6.png)
-
-## Figure 11
-![](report2_figures/pic 7.png)
 
 \setcounter{table}{3}
 \begin{sidewaystable}
@@ -329,8 +350,6 @@ param\_learning\_rate & 0.05 & 0.01 & 0.01 & 0.01 & 0.01 & 0.01 & 0.01 & 0.01 & 
 \end{tabular}
 \end{sidewaystable}
 
-## Figure 12
-![](report2_figures/pic.png)
 
 \begin{table}
 \begin{center}
@@ -362,8 +381,6 @@ ORF & 0.049 & 0.0002 & 0.003 & -0.039 \\
 \end{center}
 \end{table}
 
-## Figure 13: Causal Graph for Environmental Factors on COVID Cases
-![](report3_figures/causal_DAG.png)
 
 \newpage
 
@@ -475,98 +492,99 @@ ORF & 0.049 & 0.0002 & 0.003 & -0.039 \\
   \caption{Estimation of Environmental Impact on COVID Cases- Simple Multivariate Regression Model} 
   \label{Newly Confirmed COVID-19 Cases} 
     \resizebox{\columnwidth}{!}{% 
-\begin{tabular}{@{\extracolsep{5pt}}lcccccccccc} 
+\begin{tabular}{@{\extracolsep{5pt}}lccccccccccc} 
 \\[-1.8ex]\hline 
 \hline \\[-1.8ex] 
- & \multicolumn{10}{c}{\textit{Dependent variable:}} \\ 
-\cline{2-11} 
-\\[-1.8ex] & \multicolumn{10}{c}{Case} \\ 
- & (1) & (2) & (3) & (4) & (5) & (6) & (7) & (8) & (9) & (10) \\ 
+& \multicolumn{11}{c}{\textit{Dependent variable: Newly Confirmed COVID Cases}} \\ 
+\cline{2-12} 
+\\[-1.8ex] & \multicolumn{11}{c}{} \\ 
+& (1) & (2) & (3) & (4) & (5) & (6) & (7) & (8) & (9) & (10) & (11) \\ 
 \hline \\[-1.8ex] 
- TEMP & 0.101$^{***}$ &  &  &  &  &  &  &  &  &  \\ 
-  & (0.031) &  &  &  &  &  &  &  &  &  \\ 
-  & & & & & & & & & & \\ 
- WSPD &  & 0.403$^{*}$ &  &  &  &  &  &  &  &  \\ 
-  &  & (0.235) &  &  &  &  &  &  &  &  \\ 
-  & & & & & & & & & & \\ 
- PRES &  &  & 0.033$^{***}$ &  &  &  &  &  &  &  \\ 
-  &  &  & (0.003) &  &  &  &  &  &  &  \\ 
-  & & & & & & & & & & \\ 
- HUM &  &  &  & 0.077$^{***}$ &  &  &  &  &  &  \\ 
-  &  &  &  & (0.014) &  &  &  &  &  &  \\ 
-  & & & & & & & & & & \\ 
- O3 &  &  &  &  & 0.018 &  &  &  &  &  \\ 
-  &  &  &  &  & (0.012) &  &  &  &  &  \\ 
-  & & & & & & & & & & \\ 
- NO2 &  &  &  &  &  & $-$0.043$^{**}$ &  &  &  &  \\ 
-  &  &  &  &  &  & (0.018) &  &  &  &  \\ 
-  & & & & & & & & & & \\ 
- CO &  &  &  &  &  &  & 4.253$^{***}$ &  &  &  \\ 
-  &  &  &  &  &  &  & (0.644) &  &  &  \\ 
-  & & & & & & & & & & \\ 
- SO2 &  &  &  &  &  &  &  & $-$0.044$^{**}$ &  &  \\ 
-  &  &  &  &  &  &  &  & (0.022) &  &  \\ 
-  & & & & & & & & & & \\ 
- PM2.5 &  &  &  &  &  &  &  &  & 0.023$^{***}$ &  \\ 
-  &  &  &  &  &  &  &  &  & (0.008) &  \\ 
-  & & & & & & & & & & \\ 
- PM10 &  &  &  &  &  &  &  &  &  & 0.015$^{**}$ \\ 
-  &  &  &  &  &  &  &  &  &  & (0.007) \\ 
-  & & & & & & & & & & \\ 
- pop & 0.001$^{**}$ & 0.001$^{**}$ & 0.0005$^{*}$ & 0.001$^{**}$ & 0.001$^{**}$ & 0.001$^{***}$ & 0.001$^{**}$ & 0.001$^{**}$ & 0.001$^{**}$ & 0.001$^{**}$ \\ 
-  & (0.0003) & (0.0003) & (0.0003) & (0.0003) & (0.0003) & (0.0003) & (0.0003) & (0.0003) & (0.0003) & (0.0003) \\ 
-  & & & & & & & & & & \\ 
- GDP & 0.066$^{***}$ & 0.070$^{***}$ & 0.071$^{***}$ & 0.068$^{***}$ & 0.065$^{***}$ & 0.064$^{***}$ & 0.061$^{***}$ & 0.066$^{***}$ & 0.065$^{***}$ & 0.065$^{***}$ \\ 
-  & (0.014) & (0.014) & (0.014) & (0.014) & (0.014) & (0.014) & (0.014) & (0.014) & (0.014) & (0.014) \\ 
-  & & & & & & & & & & \\ 
- PRIM & 0.177 & 0.304 & 0.060 & 0.083 & 0.239 & 0.183 & 0.251 & 0.204 & 0.241 & 0.244 \\ 
-  & (0.223) & (0.221) & (0.223) & (0.223) & (0.221) & (0.219) & (0.222) & (0.221) & (0.222) & (0.222) \\ 
-  & & & & & & & & & & \\ 
- SEC & $-$0.209$^{***}$ & $-$0.210$^{***}$ & $-$0.208$^{***}$ & $-$0.210$^{***}$ & $-$0.207$^{***}$ & $-$0.208$^{***}$ & $-$0.204$^{***}$ & $-$0.205$^{***}$ & $-$0.202$^{***}$ & $-$0.203$^{***}$ \\ 
-  & (0.026) & (0.026) & (0.026) & (0.026) & (0.026) & (0.026) & (0.026) & (0.026) & (0.026) & (0.026) \\ 
-  & & & & & & & & & & \\ 
- A60 & 0.161$^{***}$ & 0.131$^{***}$ & 0.077$^{*}$ & 0.118$^{***}$ & 0.149$^{***}$ & 0.142$^{***}$ & 0.169$^{***}$ & 0.143$^{***}$ & 0.156$^{***}$ & 0.163$^{***}$ \\ 
-  & (0.043) & (0.044) & (0.043) & (0.041) & (0.042) & (0.042) & (0.043) & (0.042) & (0.042) & (0.043) \\ 
-  & & & & & & & & & & \\ 
- BED & $-$0.784$^{***}$ & $-$0.794$^{***}$ & $-$0.658$^{***}$ & $-$0.808$^{***}$ & $-$0.834$^{***}$ & $-$0.773$^{***}$ & $-$0.967$^{***}$ & $-$0.807$^{***}$ & $-$0.942$^{***}$ & $-$0.936$^{***}$ \\ 
-  & (0.199) & (0.210) & (0.206) & (0.200) & (0.202) & (0.201) & (0.208) & (0.199) & (0.203) & (0.207) \\ 
-  & & & & & & & & & & \\ 
- DOC & $-$5.179$^{***}$ & $-$5.338$^{***}$ & $-$5.306$^{***}$ & $-$4.735$^{***}$ & $-$5.527$^{***}$ & $-$5.387$^{***}$ & $-$5.776$^{***}$ & $-$5.381$^{***}$ & $-$5.587$^{***}$ & $-$5.629$^{***}$ \\ 
-  & (0.527) & (0.542) & (0.540) & (0.503) & (0.548) & (0.547) & (0.572) & (0.538) & (0.551) & (0.567) \\ 
-  & & & & & & & & & & \\ 
- NRS & 2.037$^{***}$ & 2.138$^{***}$ & 2.773$^{***}$ & 2.131$^{***}$ & 2.345$^{***}$ & 2.269$^{***}$ & 2.543$^{***}$ & 2.242$^{***}$ & 2.475$^{***}$ & 2.469$^{***}$ \\ 
-  & (0.341) & (0.376) & (0.366) & (0.340) & (0.356) & (0.356) & (0.369) & (0.352) & (0.356) & (0.366) \\ 
-  & & & & & & & & & & \\ 
- AREA & $-$0.00005 & $-$0.0001$^{**}$ & 0.00004 & $-$0.00002 & $-$0.0001$^{*}$ & $-$0.0001$^{*}$ & $-$0.0001$^{*}$ & $-$0.0001 & $-$0.0001 & $-$0.0001 \\ 
-  & (0.00003) & (0.00003) & (0.00004) & (0.00003) & (0.00003) & (0.00003) & (0.00003) & (0.00003) & (0.00003) & (0.00003) \\ 
-  & & & & & & & & & & \\ 
- POPDEN & $-$0.002$^{***}$ & $-$0.002$^{***}$ & $-$0.002$^{***}$ & $-$0.002$^{***}$ & $-$0.002$^{***}$ & $-$0.002$^{***}$ & $-$0.002$^{***}$ & $-$0.002$^{***}$ & $-$0.002$^{***}$ & $-$0.002$^{***}$ \\ 
-  & (0.001) & (0.001) & (0.001) & (0.001) & (0.001) & (0.001) & (0.001) & (0.001) & (0.001) & (0.001) \\ 
-  & & & & & & & & & & \\ 
- GDPPC & 0.794$^{***}$ & 0.780$^{***}$ & 0.737$^{***}$ & 0.745$^{***}$ & 0.810$^{***}$ & 0.810$^{***}$ & 0.883$^{***}$ & 0.782$^{***}$ & 0.838$^{***}$ & 0.845$^{***}$ \\ 
-  & (0.143) & (0.137) & (0.143) & (0.144) & (0.144) & (0.145) & (0.145) & (0.149) & (0.144) & (0.145) \\ 
-  & & & & & & & & & & \\ 
- PRPER & 1.039$^{***}$ & 1.048$^{***}$ & 1.050$^{***}$ & 1.070$^{***}$ & 1.059$^{***}$ & 1.039$^{***}$ & 1.065$^{***}$ & 1.041$^{***}$ & 1.057$^{***}$ & 1.064$^{***}$ \\ 
-  & (0.106) & (0.108) & (0.109) & (0.109) & (0.109) & (0.111) & (0.109) & (0.108) & (0.109) & (0.109) \\ 
-  & & & & & & & & & & \\ 
- SECPER & 0.343$^{***}$ & 0.355$^{***}$ & 0.359$^{***}$ & 0.361$^{***}$ & 0.350$^{***}$ & 0.355$^{***}$ & 0.336$^{***}$ & 0.348$^{***}$ & 0.341$^{***}$ & 0.343$^{***}$ \\ 
-  & (0.032) & (0.034) & (0.033) & (0.033) & (0.033) & (0.033) & (0.032) & (0.033) & (0.033) & (0.033) \\ 
-  & & & & & & & & & & \\ 
- ACTV & $-$6.622$^{***}$ & $-$6.453$^{***}$ & $-$6.382$^{***}$ & $-$6.310$^{***}$ & $-$6.505$^{***}$ & $-$6.276$^{***}$ & $-$6.301$^{***}$ & $-$6.441$^{***}$ & $-$6.423$^{***}$ & $-$6.525$^{***}$ \\ 
-  & (0.383) & (0.357) & (0.356) & (0.344) & (0.361) & (0.372) & (0.345) & (0.357) & (0.356) & (0.366) \\ 
-  & & & & & & & & & & \\ 
- Constant & 5.800$^{*}$ & 5.266 & $-$27.771$^{***}$ & $-$1.110 & 4.475 & 5.844$^{*}$ & 1.955 & 6.708$^{*}$ & 5.104 & 5.197 \\ 
-  & (3.262) & (3.357) & (5.311) & (3.081) & (3.371) & (3.292) & (3.196) & (3.534) & (3.260) & (3.272) \\ 
-  & & & & & & & & & & \\ 
+TEMP & 0.005$^{*}$ &  &  &  &  &  &  &  &  &  & 0.002 \\ 
+& (0.003) &  &  &  &  &  &  &  &  &  & (0.003) \\ 
+& & & & & & & & & & & \\ 
+WSPD &  & 0.004$^{*}$ &  &  &  &  &  &  &  &  & 0.007$^{***}$ \\ 
+&  & (0.003) &  &  &  &  &  &  &  &  & (0.003) \\ 
+& & & & & & & & & & & \\ 
+PRES &  &  & 0.013$^{***}$ &  &  &  &  &  &  &  & 0.012$^{***}$ \\ 
+&  &  & (0.003) &  &  &  &  &  &  &  & (0.003) \\ 
+& & & & & & & & & & & \\ 
+HUM &  &  &  & 0.007$^{***}$ &  &  &  &  &  &  & 0.008$^{***}$ \\ 
+&  &  &  & (0.002) &  &  &  &  &  &  & (0.002) \\ 
+& & & & & & & & & & & \\ 
+O3 &  &  &  &  & 0.003 &  &  &  &  &  & 0.012$^{***}$ \\ 
+&  &  &  &  & (0.002) &  &  &  &  &  & (0.003) \\ 
+& & & & & & & & & & & \\ 
+NO2 &  &  &  &  &  & $-$0.004 &  &  &  &  & $-$0.010$^{***}$ \\ 
+&  &  &  &  &  & (0.003) &  &  &  &  & (0.003) \\ 
+& & & & & & & & & & & \\ 
+CO &  &  &  &  &  &  & 0.018$^{***}$ &  &  &  & 0.039$^{***}$ \\ 
+&  &  &  &  &  &  & (0.004) &  &  &  & (0.006) \\ 
+& & & & & & & & & & & \\ 
+SO2 &  &  &  &  &  &  &  & $-$0.004 &  &  & $-$0.010$^{*}$ \\ 
+&  &  &  &  &  &  &  & (0.004) &  &  & (0.005) \\ 
+& & & & & & & & & & & \\ 
+PM2.5 &  &  &  &  &  &  &  &  & 0.008$^{**}$ &  & $-$0.028$^{***}$ \\ 
+&  &  &  &  &  &  &  &  & (0.003) &  & (0.009) \\ 
+& & & & & & & & & & & \\ 
+PM10 &  &  &  &  &  &  &  &  &  & 0.006$^{*}$ & 0.019$^{**}$ \\ 
+&  &  &  &  &  &  &  &  &  & (0.003) & (0.007) \\ 
+& & & & & & & & & & & \\ 
+pop & 0.021$^{*}$ & 0.020$^{*}$ & 0.015 & 0.021$^{*}$ & 0.021$^{*}$ & 0.023$^{**}$ & 0.023$^{*}$ & 0.021$^{*}$ & 0.020$^{*}$ & 0.020$^{*}$ & 0.015 \\ 
+& (0.012) & (0.012) & (0.012) & (0.012) & (0.012) & (0.012) & (0.012) & (0.012) & (0.012) & (0.012) & (0.012) \\ 
+& & & & & & & & & & & \\ 
+GDP & 0.035$^{***}$ & 0.037$^{***}$ & 0.038$^{***}$ & 0.037$^{***}$ & 0.035$^{***}$ & 0.034$^{***}$ & 0.033$^{***}$ & 0.035$^{***}$ & 0.035$^{***}$ & 0.035$^{***}$ & 0.041$^{***}$ \\ 
+& (0.011) & (0.011) & (0.011) & (0.011) & (0.011) & (0.011) & (0.011) & (0.011) & (0.011) & (0.011) & (0.011) \\ 
+& & & & & & & & & & & \\ 
+PRIM & 0.004 & 0.007 & 0.001 & 0.002 & 0.005 & 0.004 & 0.005 & 0.004 & 0.005 & 0.005 & $-$0.002 \\ 
+& (0.007) & (0.007) & (0.007) & (0.007) & (0.007) & (0.007) & (0.007) & (0.007) & (0.007) & (0.007) & (0.007) \\ 
+& & & & & & & & & & & \\ 
+SEC & $-$0.031$^{***}$ & $-$0.031$^{***}$ & $-$0.031$^{***}$ & $-$0.031$^{***}$ & $-$0.030$^{***}$ & $-$0.031$^{***}$ & $-$0.030$^{***}$ & $-$0.030$^{***}$ & $-$0.030$^{***}$ & $-$0.030$^{***}$ & $-$0.029$^{***}$ \\ 
+& (0.007) & (0.007) & (0.007) & (0.007) & (0.007) & (0.007) & (0.007) & (0.007) & (0.007) & (0.007) & (0.007) \\ 
+& & & & & & & & & & & \\ 
+A60 & 0.004$^{*}$ & 0.003 & 0.002 & 0.003 & 0.004$^{*}$ & 0.004$^{*}$ & 0.005$^{**}$ & 0.004$^{*}$ & 0.004$^{*}$ & 0.004$^{*}$ & 0.002 \\ 
+& (0.002) & (0.002) & (0.002) & (0.002) & (0.002) & (0.002) & (0.002) & (0.002) & (0.002) & (0.002) & (0.002) \\ 
+& & & & & & & & & & & \\ 
+BED & $-$0.004$^{**}$ & $-$0.005$^{**}$ & $-$0.004$^{*}$ & $-$0.005$^{**}$ & $-$0.005$^{**}$ & $-$0.004$^{**}$ & $-$0.006$^{***}$ & $-$0.005$^{**}$ & $-$0.005$^{***}$ & $-$0.005$^{**}$ & $-$0.003 \\ 
+& (0.002) & (0.002) & (0.002) & (0.002) & (0.002) & (0.002) & (0.002) & (0.002) & (0.002) & (0.002) & (0.002) \\ 
+& & & & & & & & & & & \\ 
+DOC & $-$0.023$^{***}$ & $-$0.023$^{***}$ & $-$0.023$^{***}$ & $-$0.021$^{***}$ & $-$0.024$^{***}$ & $-$0.023$^{***}$ & $-$0.025$^{***}$ & $-$0.023$^{***}$ & $-$0.024$^{***}$ & $-$0.024$^{***}$ & $-$0.022$^{***}$ \\ 
+& (0.003) & (0.003) & (0.003) & (0.003) & (0.003) & (0.003) & (0.003) & (0.003) & (0.003) & (0.003) & (0.003) \\ 
+& & & & & & & & & & & \\ 
+NRS & 0.011$^{***}$ & 0.011$^{***}$ & 0.015$^{***}$ & 0.011$^{***}$ & 0.013$^{***}$ & 0.012$^{***}$ & 0.014$^{***}$ & 0.012$^{***}$ & 0.013$^{***}$ & 0.013$^{***}$ & 0.013$^{***}$ \\ 
+& (0.004) & (0.004) & (0.004) & (0.004) & (0.004) & (0.004) & (0.004) & (0.004) & (0.004) & (0.004) & (0.004) \\ 
+& & & & & & & & & & & \\ 
+AREA & $-$0.004 & $-$0.006 & 0.004 & $-$0.001 & $-$0.005 & $-$0.005 & $-$0.005 & $-$0.004 & $-$0.004 & $-$0.004 & 0.007 \\ 
+& (0.004) & (0.004) & (0.004) & (0.004) & (0.004) & (0.004) & (0.004) & (0.004) & (0.004) & (0.004) & (0.005) \\ 
+& & & & & & & & & & & \\ 
+POPDEN & $-$0.013$^{**}$ & $-$0.011$^{**}$ & $-$0.011$^{**}$ & $-$0.012$^{**}$ & $-$0.011$^{**}$ & $-$0.012$^{**}$ & $-$0.011$^{*}$ & $-$0.012$^{**}$ & $-$0.011$^{**}$ & $-$0.011$^{**}$ & $-$0.011$^{*}$ \\ 
+& (0.006) & (0.006) & (0.006) & (0.006) & (0.006) & (0.006) & (0.006) & (0.006) & (0.006) & (0.006) & (0.006) \\ 
+& & & & & & & & & & & \\ 
+GDPPC & 0.019$^{***}$ & 0.019$^{***}$ & 0.018$^{***}$ & 0.018$^{***}$ & 0.020$^{***}$ & 0.020$^{***}$ & 0.022$^{***}$ & 0.019$^{***}$ & 0.021$^{***}$ & 0.021$^{***}$ & 0.016$^{***}$ \\ 
+& (0.004) & (0.004) & (0.004) & (0.004) & (0.004) & (0.004) & (0.004) & (0.005) & (0.004) & (0.004) & (0.005) \\ 
+& & & & & & & & & & & \\ 
+PRPER & 0.102$^{***}$ & 0.103$^{***}$ & 0.103$^{***}$ & 0.105$^{***}$ & 0.104$^{***}$ & 0.102$^{***}$ & 0.104$^{***}$ & 0.102$^{***}$ & 0.104$^{***}$ & 0.104$^{***}$ & 0.094$^{***}$ \\ 
+& (0.013) & (0.013) & (0.013) & (0.013) & (0.013) & (0.013) & (0.013) & (0.013) & (0.013) & (0.013) & (0.013) \\ 
+& & & & & & & & & & & \\ 
+SECPER & 0.034$^{***}$ & 0.035$^{***}$ & 0.035$^{***}$ & 0.035$^{***}$ & 0.034$^{***}$ & 0.035$^{***}$ & 0.033$^{***}$ & 0.034$^{***}$ & 0.033$^{***}$ & 0.034$^{***}$ & 0.033$^{***}$ \\ 
+& (0.006) & (0.006) & (0.006) & (0.006) & (0.006) & (0.006) & (0.006) & (0.006) & (0.006) & (0.006) & (0.006) \\ 
+& & & & & & & & & & & \\ 
+ACTV & $-$0.055$^{***}$ & $-$0.054$^{***}$ & $-$0.053$^{***}$ & $-$0.053$^{***}$ & $-$0.054$^{***}$ & $-$0.052$^{***}$ & $-$0.052$^{***}$ & $-$0.054$^{***}$ & $-$0.053$^{***}$ & $-$0.054$^{***}$ & $-$0.051$^{***}$ \\ 
+& (0.002) & (0.002) & (0.002) & (0.002) & (0.002) & (0.002) & (0.002) & (0.002) & (0.002) & (0.002) & (0.002) \\ 
+& & & & & & & & & & & \\ 
+Constant & $-$0.001 & 0.00003 & $-$0.011$^{**}$ & $-$0.005 & $-$0.001 & 0.001 & $-$0.002 & 0.001 & $-$0.0002 & $-$0.0001 & $-$0.026$^{***}$ \\ 
+& (0.005) & (0.004) & (0.005) & (0.005) & (0.004) & (0.004) & (0.004) & (0.004) & (0.004) & (0.004) & (0.006) \\ 
+& & & & & & & & & & & \\ 
 \hline \\[-1.8ex] 
-Observations & 12,870 & 12,870 & 12,870 & 12,870 & 12,870 & 12,870 & 12,870 & 12,870 & 12,870 & 12,870 \\ 
-R$^{2}$ & 0.086 & 0.086 & 0.087 & 0.087 & 0.086 & 0.086 & 0.087 & 0.086 & 0.086 & 0.086 \\ 
-Adjusted R$^{2}$ & 0.085 & 0.085 & 0.086 & 0.086 & 0.085 & 0.085 & 0.086 & 0.085 & 0.085 & 0.085 \\ 
-Residual Std. Error (df = 12854) & 32.869 & 32.869 & 32.851 & 32.848 & 32.871 & 32.870 & 32.842 & 32.872 & 32.866 & 32.869 \\ 
+Observations & 12,870 & 12,870 & 12,870 & 12,870 & 12,870 & 12,870 & 12,870 & 12,870 & 12,870 & 12,870 & 12,870 \\ 
+R$^{2}$ & 0.086 & 0.086 & 0.087 & 0.087 & 0.086 & 0.086 & 0.087 & 0.086 & 0.086 & 0.086 & 0.093 \\ 
+Adjusted R$^{2}$ & 0.085 & 0.085 & 0.086 & 0.086 & 0.085 & 0.085 & 0.086 & 0.085 & 0.085 & 0.085 & 0.091 \\ 
+Residual Std. Error & 0.032 (df = 12854) & 0.032 (df = 12854) & 0.032 (df = 12854) & 0.032 (df = 12854) & 0.032 (df = 12854) & 0.032 (df = 12854) & 0.032 (df = 12854) & 0.032 (df = 12854) & 0.032 (df = 12854) & 0.032 (df = 12854) & 0.032 (df = 12845) \\ 
 \hline 
 \hline \\[-1.8ex] 
-\textit{}  & \multicolumn{10}{r}{$^{*}$p$<$0.1; $^{**}$p$<$0.05; $^{***}$p$<$0.01} \\ 
-\end{tabular} %
+\textit{Note:}  & \multicolumn{11}{r}{$^{*}$p$<$0.1; $^{**}$p$<$0.05; $^{***}$p$<$0.01} \\ 
+\end{tabular} 
+ %
 }
 \end{table} 
 
@@ -577,95 +595,195 @@ Residual Std. Error (df = 12854) & 32.869 & 32.869 & 32.851 & 32.848 & 32.871 & 
 \begin{tabular}{@{\extracolsep{5pt}}lcccccccccc} 
 \\[-1.8ex]\hline 
 \hline \\[-1.8ex] 
- & \multicolumn{10}{c}{\textit{Dependent variable:}} \\ 
+& \multicolumn{10}{c}{\textit{Dependent variable:Newly Confirmed COVID-19 Cases}} \\ 
 \cline{2-11} 
-\\[-1.8ex] & \multicolumn{10}{c}{Case} \\ 
- & (1) & (2) & (3) & (4) & (5) & (6) & (7) & (8) & (9) & (10) \\ 
+\\[-1.8ex] & \multicolumn{10}{c}{} \\ 
+& (1) & (2) & (3) & (4) & (5) & (6) & (7) & (8) & (9) & (10) \\ 
 \hline \\[-1.8ex] 
- TEMP & $-$1.048$^{***}$ &  &  &  &  &  &  &  &  &  \\ 
-  & (0.317) &  &  &  &  &  &  &  &  &  \\ 
-  & & & & & & & & & & \\ 
- WSPD &  & $-$9.450$^{***}$ &  &  &  &  &  &  &  &  \\ 
-  &  & (2.954) &  &  &  &  &  &  &  &  \\ 
-  & & & & & & & & & & \\ 
- PRES &  &  & $-$0.466$^{***}$ &  &  &  &  &  &  &  \\ 
-  &  &  & (0.073) &  &  &  &  &  &  &  \\ 
-  & & & & & & & & & & \\ 
- HUM &  &  &  & 0.176 &  &  &  &  &  &  \\ 
-  &  &  &  & (0.212) &  &  &  &  &  &  \\ 
-  & & & & & & & & & & \\ 
- O3 &  &  &  &  & 0.220 &  &  &  &  &  \\ 
-  &  &  &  &  & (0.175) &  &  &  &  &  \\ 
-  & & & & & & & & & & \\ 
- NO2 &  &  &  &  &  & $-$0.871$^{**}$ &  &  &  &  \\ 
-  &  &  &  &  &  & (0.361) &  &  &  &  \\ 
-  & & & & & & & & & & \\ 
- CO &  &  &  &  &  &  & 13.454 &  &  &  \\ 
-  &  &  &  &  &  &  & (13.252) &  &  &  \\ 
-  & & & & & & & & & & \\ 
- SO2 &  &  &  &  &  &  &  & $-$1.534$^{***}$ &  &  \\ 
-  &  &  &  &  &  &  &  & (0.314) &  &  \\ 
-  & & & & & & & & & & \\ 
- PM2.5 &  &  &  &  &  &  &  &  & $-$0.136 &  \\ 
-  &  &  &  &  &  &  &  &  & (0.109) &  \\ 
-  & & & & & & & & & & \\ 
- PM10 &  &  &  &  &  &  &  &  &  & 0.038 \\ 
-  &  &  &  &  &  &  &  &  &  & (0.067) \\ 
-  & & & & & & & & & & \\ 
- pop & 0.002$^{***}$ & $-$0.001 & $-$0.123$^{***}$ & $-$0.004$^{***}$ & 0.002 & 0.002$^{*}$ & $-$0.001 & 0.001$^{*}$ & 0.001$^{***}$ & 0.001$^{**}$ \\ 
-  & (0.001) & (0.001) & (0.013) & (0.001) & (0.001) & (0.001) & (0.001) & (0.0005) & (0.0005) & (0.001) \\ 
-  & & & & & & & & & & \\ 
- GDP & 0.040$^{*}$ & 0.074$^{***}$ & 0.456 & 0.091$^{*}$ & 0.107$^{*}$ & 0.088$^{*}$ & 0.028 & 0.009 & 0.032 & 0.057$^{**}$ \\ 
-  & (0.023) & (0.028) & (0.701) & (0.050) & (0.059) & (0.047) & (0.031) & (0.027) & (0.021) & (0.028) \\ 
-  & & & & & & & & & & \\ 
- PRIM & 0.735$^{**}$ & 0.481 & 46.245$^{***}$ & 0.719 & 1.868$^{*}$ & 1.191$^{*}$ & $-$0.486 & $-$0.321 & $-$0.882$^{**}$ & $-$0.389 \\ 
-  & (0.370) & (0.486) & (6.541) & (0.936) & (1.010) & (0.698) & (0.531) & (0.347) & (0.344) & (0.396) \\ 
-  & & & & & & & & & & \\ 
- SEC & $-$0.209$^{***}$ & 0.213$^{**}$ & 18.090$^{***}$ & 0.299$^{***}$ & $-$0.768$^{***}$ & $-$0.345$^{***}$ & 0.317$^{***}$ & $-$0.051 & $-$0.144$^{***}$ & $-$0.237$^{***}$ \\ 
-  & (0.053) & (0.094) & (2.200) & (0.111) & (0.139) & (0.079) & (0.072) & (0.042) & (0.045) & (0.058) \\ 
-  & & & & & & & & & & \\ 
- A60 & $-$0.360$^{***}$ & $-$0.015 & $-$3.031$^{***}$ & $-$0.243 & $-$0.156 & 0.320$^{**}$ & 0.187$^{*}$ & 0.053 & 0.406$^{***}$ & 0.295$^{***}$ \\ 
-  & (0.067) & (0.087) & (1.010) & (0.164) & (0.190) & (0.159) & (0.109) & (0.072) & (0.072) & (0.084) \\ 
-  & & & & & & & & & & \\ 
- BED & $-$0.982$^{***}$ & $-$2.747$^{***}$ & $-$1.821 & 2.433$^{***}$ & 0.119 & $-$2.195$^{***}$ & $-$0.167 & $-$1.293$^{***}$ & $-$0.293 & 0.563 \\ 
-  & (0.303) & (0.468) & (5.774) & (0.797) & (0.786) & (0.805) & (0.544) & (0.394) & (0.311) & (0.368) \\ 
-  & & & & & & & & & & \\ 
- DOC & $-$11.141$^{***}$ & $-$2.236$^{*}$ & 171.943$^{***}$ & 12.477$^{***}$ & $-$13.787$^{***}$ & $-$18.679$^{***}$ & 3.454$^{*}$ & $-$7.346$^{***}$ & $-$4.815$^{***}$ & $-$7.725$^{***}$ \\ 
-  & (1.001) & (1.229) & (19.616) & (1.994) & (2.368) & (2.229) & (1.813) & (1.036) & (1.031) & (1.042) \\ 
-  & & & & & & & & & & \\ 
- NRS & 3.963$^{***}$ & 3.396$^{***}$ & $-$90.127$^{***}$ & $-$8.547$^{***}$ & 4.394$^{***}$ & 9.622$^{***}$ & 1.873$^{*}$ & 3.099$^{***}$ & 3.053$^{***}$ & 3.175$^{***}$ \\ 
-  & (0.502) & (0.742) & (12.667) & (1.214) & (1.470) & (1.451) & (1.111) & (0.651) & (0.599) & (0.655) \\ 
-  & & & & & & & & & & \\ 
- AREA & $-$0.0003$^{***}$ & $-$0.0003$^{***}$ & 0.001 & 0.0005$^{***}$ & $-$0.00003 & 0.00003 & 0.0004$^{***}$ & 0.00005 & $-$0.00002 & $-$0.00003 \\ 
-  & (0.0001) & (0.0001) & (0.001) & (0.0001) & (0.0002) & (0.0001) & (0.0001) & (0.0001) & (0.0001) & (0.0001) \\ 
-  & & & & & & & & & & \\ 
- POPDEN & $-$0.010$^{***}$ & $-$0.007$^{***}$ & 0.097$^{**}$ & 0.007$^{**}$ & 0.004$^{**}$ & $-$0.002 & 0.007$^{***}$ & $-$0.002$^{*}$ & 0.003$^{***}$ & 0.001 \\ 
-  & (0.002) & (0.001) & (0.041) & (0.004) & (0.002) & (0.002) & (0.002) & (0.001) & (0.001) & (0.001) \\ 
-  & & & & & & & & & & \\ 
- GDPPC & 1.579$^{***}$ & $-$0.711$^{*}$ & $-$28.448$^{***}$ & $-$0.729 & 2.532$^{***}$ & 1.467$^{***}$ & $-$1.202$^{***}$ & 0.885$^{***}$ & $-$0.206 & 0.335 \\ 
-  & (0.283) & (0.411) & (3.554) & (0.554) & (0.834) & (0.396) & (0.390) & (0.178) & (0.233) & (0.286) \\ 
-  & & & & & & & & & & \\ 
- PRPER & 1.483$^{***}$ & 1.194$^{***}$ & $-$32.666$^{***}$ & $-$2.084$^{***}$ & 1.868$^{***}$ & 2.435$^{***}$ & 0.463$^{*}$ & 1.752$^{***}$ & 0.491$^{***}$ & 1.192$^{***}$ \\ 
-  & (0.145) & (0.212) & (3.204) & (0.307) & (0.459) & (0.295) & (0.239) & (0.191) & (0.159) & (0.205) \\ 
-  & & & & & & & & & & \\ 
- SECPER & 0.384$^{***}$ & 0.133$^{**}$ & $-$6.730$^{***}$ & $-$0.354$^{***}$ & 0.744$^{***}$ & 0.457$^{***}$ & $-$0.036 & 0.328$^{***}$ & 0.160$^{***}$ & 0.387$^{***}$ \\ 
-  & (0.051) & (0.065) & (0.808) & (0.097) & (0.155) & (0.097) & (0.091) & (0.051) & (0.056) & (0.075) \\ 
-  & & & & & & & & & & \\ 
- ACTV & $-$7.057$^{***}$ & $-$6.001$^{***}$ & 46.176$^{***}$ & 7.277$^{***}$ & $-$9.883$^{***}$ & $-$14.160$^{***}$ & $-$3.300$^{***}$ & $-$9.114$^{***}$ & $-$5.860$^{***}$ & $-$8.416$^{***}$ \\ 
-  & (0.462) & (0.684) & (4.004) & (1.347) & (1.645) & (0.987) & (0.523) & (0.610) & (0.499) & (0.575) \\ 
-  & & & & & & & & & & \\ 
- Constant & 18.279$^{***}$ & 30.247$^{***}$ & 459.998$^{***}$ & $-$15.148 & $-$12.132 & 24.190$^{**}$ & $-$6.230 & 16.347$^{***}$ & 10.195$^{**}$ & 3.338 \\ 
-  & (5.285) & (7.372) & (70.770) & (12.627) & (16.590) & (11.898) & (8.984) & (5.486) & (4.979) & (6.277) \\ 
-  & & & & & & & & & & \\ 
+TEMP & $-$0.023 &  &  &  &  &  &  &  &  &  \\ 
+& (0.032) &  &  &  &  &  &  &  &  &  \\ 
+& & & & & & & & & & \\ 
+WSPD &  & $-$0.067 &  &  &  &  &  &  &  &  \\ 
+&  & (0.045) &  &  &  &  &  &  &  &  \\ 
+& & & & & & & & & & \\ 
+PRES &  &  & $-$0.160$^{***}$ &  &  &  &  &  &  &  \\ 
+&  &  & (0.044) &  &  &  &  &  &  &  \\ 
+& & & & & & & & & & \\ 
+HUM &  &  &  & $-$0.005 &  &  &  &  &  &  \\ 
+&  &  &  & (0.022) &  &  &  &  &  &  \\ 
+& & & & & & & & & & \\ 
+O3 &  &  &  &  & 0.035 &  &  &  &  &  \\ 
+&  &  &  &  & (0.036) &  &  &  &  &  \\ 
+& & & & & & & & & & \\ 
+NO2 &  &  &  &  &  & $-$0.033 &  &  &  &  \\ 
+&  &  &  &  &  & (0.032) &  &  &  &  \\ 
+& & & & & & & & & & \\ 
+CO &  &  &  &  &  &  & 0.024 &  &  &  \\ 
+&  &  &  &  &  &  & (0.051) &  &  &  \\ 
+& & & & & & & & & & \\ 
+SO2 &  &  &  &  &  &  &  & $-$0.091$^{*}$ &  &  \\ 
+&  &  &  &  &  &  &  & (0.050) &  &  \\ 
+& & & & & & & & & & \\ 
+PM2.5 &  &  &  &  &  &  &  &  & $-$0.055 &  \\ 
+&  &  &  &  &  &  &  &  & (0.050) &  \\ 
+& & & & & & & & & & \\ 
+PM10 &  &  &  &  &  &  &  &  &  & 0.002 \\ 
+&  &  &  &  &  &  &  &  &  & (0.043) \\ 
+& & & & & & & & & & \\ 
+pop & 0.088 & $-$0.014 & $-$1.319$^{***}$ & $-$0.097$^{**}$ & 0.050 & 0.043 & $-$0.012 & 0.026 & 0.040$^{**}$ & 0.042$^{*}$ \\ 
+& (0.062) & (0.023) & (0.230) & (0.046) & (0.048) & (0.027) & (0.024) & (0.021) & (0.019) & (0.022) \\ 
+& & & & & & & & & & \\ 
+GDP & 0.011 & 0.039$^{*}$ & 0.102 & 0.047 & 0.056 & 0.046$^{*}$ & 0.017 & 0.013 & 0.017 & 0.029 \\ 
+& (0.057) & (0.021) & (0.275) & (0.040) & (0.043) & (0.026) & (0.022) & (0.021) & (0.018) & (0.021) \\ 
+& & & & & & & & & & \\ 
+PRIM & 0.064$^{*}$ & 0.010 & 0.353$^{***}$ & 0.014 & 0.039 & 0.024 & $-$0.007 & $-$0.006 & $-$0.018 & $-$0.008 \\ 
+& (0.037) & (0.013) & (0.135) & (0.027) & (0.028) & (0.015) & (0.014) & (0.011) & (0.011) & (0.013) \\ 
+& & & & & & & & & & \\ 
+SEC & $-$0.041 & 0.029$^{*}$ & 0.958$^{***}$ & 0.036 & $-$0.108$^{***}$ & $-$0.049$^{***}$ & 0.026$^{*}$ & $-$0.014 & $-$0.022$^{*}$ & $-$0.034$^{**}$ \\ 
+& (0.038) & (0.016) & (0.233) & (0.029) & (0.028) & (0.017) & (0.014) & (0.011) & (0.012) & (0.014) \\ 
+& & & & & & & & & & \\ 
+A60 & $-$0.041$^{***}$ & $-$0.0001 & $-$0.026 & $-$0.005 & $-$0.004 & 0.008 & 0.005 & 0.002 & 0.010$^{**}$ & 0.007$^{*}$ \\ 
+& (0.013) & (0.004) & (0.024) & (0.009) & (0.009) & (0.005) & (0.005) & (0.004) & (0.004) & (0.005) \\ 
+& & & & & & & & & & \\ 
+BED & $-$0.004 & $-$0.015$^{***}$ & $-$0.0002 & 0.012$^{*}$ & 0.0004 & $-$0.012$^{**}$ & $-$0.002 & $-$0.007$^{**}$ & $-$0.002 & 0.002 \\ 
+& (0.010) & (0.004) & (0.022) & (0.007) & (0.008) & (0.005) & (0.005) & (0.003) & (0.004) & (0.004) \\ 
+& & & & & & & & & & \\ 
+DOC & $-$0.114$^{***}$ & $-$0.010 & 0.253$^{***}$ & 0.046$^{***}$ & $-$0.058$^{***}$ & $-$0.076$^{***}$ & 0.006 & $-$0.030$^{***}$ & $-$0.021$^{***}$ & $-$0.033$^{***}$ \\ 
+& (0.016) & (0.006) & (0.043) & (0.011) & (0.012) & (0.008) & (0.006) & (0.006) & (0.005) & (0.006) \\ 
+& & & & & & & & & & \\ 
+NRS & 0.044$^{***}$ & 0.018$^{**}$ & $-$0.171$^{***}$ & $-$0.039$^{***}$ & 0.023 & 0.048$^{***}$ & 0.010 & 0.016$^{**}$ & 0.016$^{***}$ & 0.017$^{**}$ \\ 
+& (0.016) & (0.007) & (0.031) & (0.011) & (0.015) & (0.008) & (0.008) & (0.006) & (0.006) & (0.007) \\ 
+& & & & & & & & & & \\ 
+AREA & $-$0.064$^{***}$ & $-$0.021$^{***}$ & 0.043 & 0.035$^{***}$ & $-$0.002 & 0.002 & 0.020$^{**}$ & 0.003 & $-$0.002 & $-$0.003 \\ 
+& (0.017) & (0.008) & (0.054) & (0.013) & (0.017) & (0.009) & (0.008) & (0.006) & (0.007) & (0.008) \\ 
+& & & & & & & & & & \\ 
+POPDEN & $-$0.135$^{***}$ & $-$0.042$^{***}$ & 0.218 & 0.041 & 0.027 & $-$0.014 & 0.027$^{*}$ & $-$0.011 & 0.013 & 0.006 \\ 
+& (0.039) & (0.013) & (0.207) & (0.029) & (0.023) & (0.014) & (0.015) & (0.010) & (0.010) & (0.011) \\ 
+& & & & & & & & & & \\ 
+GDPPC & 0.078$^{***}$ & $-$0.016$^{*}$ & $-$0.234$^{***}$ & $-$0.014 & 0.060$^{***}$ & 0.034$^{***}$ & $-$0.015$^{*}$ & 0.022$^{***}$ & $-$0.002 & 0.010 \\ 
+& (0.023) & (0.009) & (0.064) & (0.018) & (0.018) & (0.010) & (0.009) & (0.007) & (0.008) & (0.009) \\ 
+& & & & & & & & & & \\ 
+PRPER & 0.227$^{***}$ & 0.116$^{***}$ & $-$1.039$^{***}$ & $-$0.168$^{***}$ & 0.178$^{***}$ & 0.223$^{***}$ & 0.058$^{**}$ & 0.162$^{***}$ & 0.054$^{**}$ & 0.117$^{***}$ \\ 
+& (0.059) & (0.026) & (0.189) & (0.043) & (0.052) & (0.029) & (0.027) & (0.021) & (0.021) & (0.025) \\ 
+& & & & & & & & & & \\ 
+SECPER & 0.048$^{*}$ & 0.014 & $-$0.212$^{***}$ & $-$0.027 & 0.071$^{***}$ & 0.043$^{***}$ & 0.005 & 0.033$^{***}$ & 0.017$^{*}$ & 0.037$^{***}$ \\ 
+& (0.029) & (0.012) & (0.061) & (0.021) & (0.024) & (0.013) & (0.012) & (0.009) & (0.010) & (0.012) \\ 
+& & & & & & & & & & \\ 
+ACTV & $-$0.063$^{***}$ & $-$0.050$^{***}$ & 0.102$^{***}$ & 0.048$^{***}$ & $-$0.081$^{***}$ & $-$0.110$^{***}$ & $-$0.033$^{***}$ & $-$0.072$^{***}$ & $-$0.049$^{***}$ & $-$0.069$^{***}$ \\ 
+& (0.010) & (0.003) & (0.015) & (0.007) & (0.007) & (0.004) & (0.004) & (0.003) & (0.003) & (0.003) \\ 
+& & & & & & & & & & \\ 
+Constant & 0.018 & 0.015$^{*}$ & 0.140$^{***}$ & $-$0.003 & $-$0.016 & 0.006 & $-$0.003 & 0.005 & 0.006 & 0.0003 \\ 
+& (0.020) & (0.009) & (0.040) & (0.015) & (0.018) & (0.010) & (0.009) & (0.006) & (0.007) & (0.009) \\ 
+& & & & & & & & & & \\ 
 \hline \\[-1.8ex] 
 Observations & 12,870 & 12,870 & 12,870 & 12,870 & 12,870 & 12,870 & 12,870 & 12,870 & 12,870 & 12,870 \\ 
 R$^{2}$ & 0.093 & 0.090 & 0.113 & 0.117 & 0.090 & 0.120 & 0.098 & 0.093 & 0.093 & 0.090 \\ 
 Adjusted R$^{2}$ & 0.091 & 0.088 & 0.111 & 0.115 & 0.088 & 0.118 & 0.096 & 0.091 & 0.091 & 0.088 \\ 
-Residual Std. Error (df = 12840) & 32.757 & 32.809 & 32.386 & 32.326 & 32.815 & 32.274 & 32.661 & 32.759 & 32.764 & 32.817 \\ 
+Residual Std. Error (df = 12840) & 0.032 & 0.032 & 0.032 & 0.032 & 0.032 & 0.032 & 0.032 & 0.032 & 0.032 & 0.032 \\ 
 \hline 
 \hline \\[-1.8ex] 
-\textit{}  & \multicolumn{10}{r}{$^{*}$p$<$0.1; $^{**}$p$<$0.05; $^{***}$p$<$0.01} \\ 
+\textit{Note:}  & \multicolumn{10}{r}{$^{*}$p$<$0.1; $^{**}$p$<$0.05; $^{***}$p$<$0.01} \\ 
 \end{tabular} %
+}
+\end{table} 
+
+
+\begin{table}[!htbp] \centering 
+  \caption{Estimation of Environmental Impact on COVID Cases- Multivariate Regression Model with Interaction, with other Environmental Factors as Covariates} 
+  \label{} 
+    \resizebox{\columnwidth}{!}{% 
+\begin{tabular}{@{\extracolsep{5pt}}lcccccccccc} 
+\\[-1.8ex]\hline 
+\hline \\[-1.8ex] 
+& \multicolumn{10}{c}{\textit{Dependent variable: Newly Confirmed COVID-19 Cases}} \\ 
+\cline{2-11} 
+\\[-1.8ex] & \multicolumn{10}{c}{} \\ 
+& (TEMP) & (WSPD) & (PRES) & (HUM) & (O3) & (NO2) & (CO) & (SO2) & (PM2.5) & (PM10) \\ 
+\hline \\[-1.8ex] 
+TEMP & $-$0.053 & $-$0.010 & $-$0.110$^{***}$ & 0.016 & 0.003 & 0.007 & 0.002 & $-$0.001 & 0.0004 & $-$0.003 \\ 
+& (0.045) & (0.006) & (0.030) & (0.014) & (0.013) & (0.007) & (0.007) & (0.005) & (0.006) & (0.006) \\ 
+& & & & & & & & & & \\ 
+WSPD & $-$0.004 & $-$0.031 & 0.011 & 0.003 & 0.047$^{***}$ & 0.012$^{**}$ & $-$0.003 & 0.011$^{**}$ & 0.009$^{**}$ & 0.020$^{***}$ \\ 
+& (0.014) & (0.058) & (0.018) & (0.009) & (0.010) & (0.006) & (0.006) & (0.005) & (0.005) & (0.005) \\ 
+& & & & & & & & & & \\ 
+PRES & $-$0.010 & 0.016$^{**}$ & $-$0.219$^{***}$ & $-$0.027$^{***}$ & 0.032$^{**}$ & 0.013$^{*}$ & 0.003 & 0.016$^{***}$ & $-$0.005 & 0.003 \\ 
+& (0.016) & (0.007) & (0.049) & (0.010) & (0.015) & (0.007) & (0.007) & (0.006) & (0.006) & (0.007) \\ 
+& & & & & & & & & & \\ 
+HUM & 0.042$^{***}$ & 0.020$^{***}$ & $-$0.036$^{***}$ & $-$0.090$^{***}$ & 0.032$^{***}$ & 0.037$^{***}$ & $-$0.006 & 0.021$^{***}$ & 0.0004 & 0.012$^{***}$ \\ 
+& (0.012) & (0.005) & (0.014) & (0.028) & (0.009) & (0.005) & (0.004) & (0.004) & (0.004) & (0.004) \\ 
+& & & & & & & & & & \\ 
+O3 & 0.014 & 0.028$^{***}$ & $-$0.012 & $-$0.006 & 0.163$^{***}$ & 0.031$^{***}$ & 0.020$^{***}$ & 0.020$^{***}$ & 0.007 & 0.013$^{**}$ \\ 
+& (0.014) & (0.005) & (0.024) & (0.011) & (0.049) & (0.006) & (0.006) & (0.004) & (0.005) & (0.006) \\ 
+& & & & & & & & & & \\ 
+NO2 & $-$0.019 & $-$0.028$^{***}$ & 0.044$^{*}$ & 0.024$^{**}$ & $-$0.022$^{*}$ & 0.133$^{***}$ & $-$0.003 & $-$0.012$^{**}$ & $-$0.011$^{**}$ & $-$0.015$^{**}$ \\ 
+& (0.016) & (0.006) & (0.026) & (0.012) & (0.012) & (0.043) & (0.006) & (0.005) & (0.006) & (0.007) \\ 
+& & & & & & & & & & \\ 
+CO & 0.035 & 0.019 & $-$0.187$^{***}$ & $-$0.126$^{***}$ & 0.113$^{***}$ & 0.075$^{***}$ & $-$0.052 & 0.059$^{***}$ & 0.067$^{***}$ & 0.082$^{***}$ \\ 
+& (0.025) & (0.012) & (0.046) & (0.024) & (0.021) & (0.012) & (0.069) & (0.009) & (0.010) & (0.011) \\ 
+& & & & & & & & & & \\ 
+SO2 & $-$0.029$^{*}$ & $-$0.002 & 0.156$^{***}$ & 0.058$^{***}$ & $-$0.020 & $-$0.018 & 0.001 & 0.089 & 0.003 & $-$0.008 \\ 
+& (0.018) & (0.010) & (0.036) & (0.018) & (0.022) & (0.013) & (0.010) & (0.063) & (0.009) & (0.010) \\ 
+& & & & & & & & & & \\ 
+PM2.5 & $-$0.059 & $-$0.042$^{**}$ & 0.069 & 0.105$^{***}$ & $-$0.150$^{***}$ & $-$0.025 & $-$0.001 & $-$0.043$^{***}$ & $-$0.296$^{***}$ & $-$0.019 \\ 
+& (0.039) & (0.017) & (0.067) & (0.029) & (0.035) & (0.020) & (0.017) & (0.014) & (0.071) & (0.013) \\ 
+& & & & & & & & & & \\ 
+PM10 & 0.031 & 0.051$^{***}$ & $-$0.088$^{*}$ & $-$0.051$^{***}$ & 0.104$^{***}$ & 0.044$^{**}$ & 0.013 & 0.034$^{**}$ & 0.007 & 0.030 \\ 
+& (0.036) & (0.015) & (0.048) & (0.019) & (0.031) & (0.018) & (0.015) & (0.013) & (0.009) & (0.058) \\ 
+& & & & & & & & & & \\ 
+pop & 0.045 & $-$0.018 & $-$1.362$^{***}$ & $-$0.113$^{**}$ & 0.095$^{*}$ & 0.028 & $-$0.022 & 0.037$^{*}$ & 0.062$^{***}$ & 0.062$^{***}$ \\ 
+& (0.065) & (0.024) & (0.244) & (0.049) & (0.050) & (0.027) & (0.025) & (0.022) & (0.020) & (0.023) \\ 
+& & & & & & & & & & \\ 
+GDP & 0.042 & 0.048$^{**}$ & 0.302 & 0.076$^{*}$ & 0.036 & 0.060$^{**}$ & 0.026 & 0.015 & 0.014 & 0.023 \\ 
+& (0.059) & (0.021) & (0.280) & (0.042) & (0.044) & (0.026) & (0.022) & (0.021) & (0.018) & (0.022) \\ 
+& & & & & & & & & & \\ 
+PRIM & 0.067$^{*}$ & 0.005 & 0.346$^{**}$ & 0.032 & $-$0.002 & $-$0.001 & $-$0.009 & $-$0.020$^{*}$ & $-$0.017 & $-$0.020 \\ 
+& (0.038) & (0.014) & (0.141) & (0.028) & (0.029) & (0.016) & (0.014) & (0.012) & (0.012) & (0.014) \\ 
+& & & & & & & & & & \\ 
+SEC & $-$0.031 & 0.021 & 0.915$^{***}$ & 0.017 & $-$0.104$^{***}$ & $-$0.048$^{***}$ & 0.024$^{*}$ & $-$0.023$^{**}$ & $-$0.032$^{***}$ & $-$0.036$^{***}$ \\ 
+& (0.038) & (0.016) & (0.236) & (0.029) & (0.028) & (0.017) & (0.014) & (0.011) & (0.012) & (0.014) \\ 
+& & & & & & & & & & \\ 
+A60 & $-$0.044$^{***}$ & $-$0.0004 & $-$0.038 & $-$0.005 & $-$0.005 & 0.009$^{*}$ & 0.011$^{*}$ & 0.003 & 0.012$^{***}$ & 0.007 \\ 
+& (0.014) & (0.005) & (0.027) & (0.010) & (0.009) & (0.005) & (0.005) & (0.004) & (0.004) & (0.005) \\ 
+& & & & & & & & & & \\ 
+BED & $-$0.006 & $-$0.010$^{**}$ & 0.014 & 0.021$^{***}$ & 0.010 & $-$0.017$^{***}$ & $-$0.005 & $-$0.008$^{**}$ & $-$0.001 & $-$0.0002 \\ 
+& (0.011) & (0.004) & (0.023) & (0.007) & (0.008) & (0.005) & (0.005) & (0.004) & (0.004) & (0.004) \\ 
+& & & & & & & & & & \\ 
+DOC & $-$0.109$^{***}$ & $-$0.018$^{***}$ & 0.295$^{***}$ & 0.061$^{***}$ & $-$0.052$^{***}$ & $-$0.066$^{***}$ & 0.003 & $-$0.028$^{***}$ & $-$0.013$^{**}$ & $-$0.026$^{***}$ \\ 
+& (0.017) & (0.007) & (0.045) & (0.012) & (0.013) & (0.008) & (0.006) & (0.006) & (0.006) & (0.006) \\ 
+& & & & & & & & & & \\ 
+NRS & 0.047$^{***}$ & 0.023$^{***}$ & $-$0.176$^{***}$ & $-$0.065$^{***}$ & 0.013 & 0.052$^{***}$ & 0.015$^{*}$ & 0.023$^{***}$ & 0.009 & 0.016$^{**}$ \\ 
+& (0.017) & (0.008) & (0.035) & (0.012) & (0.016) & (0.010) & (0.008) & (0.007) & (0.006) & (0.008) \\ 
+& & & & & & & & & & \\ 
+AREA & $-$0.044$^{**}$ & $-$0.007 & 0.042 & 0.021 & 0.013 & 0.043$^{***}$ & 0.030$^{***}$ & 0.018$^{**}$ & $-$0.006 & 0.004 \\ 
+& (0.019) & (0.009) & (0.056) & (0.015) & (0.020) & (0.011) & (0.010) & (0.008) & (0.008) & (0.010) \\ 
+& & & & & & & & & & \\ 
+POPDEN & $-$0.152$^{***}$ & $-$0.032$^{**}$ & 0.287 & 0.034 & 0.027 & $-$0.009 & 0.047$^{***}$ & 0.004 & 0.028$^{***}$ & 0.018 \\ 
+& (0.040) & (0.014) & (0.210) & (0.029) & (0.023) & (0.014) & (0.016) & (0.011) & (0.010) & (0.012) \\ 
+& & & & & & & & & & \\ 
+GDPPC & 0.061$^{**}$ & $-$0.020$^{**}$ & $-$0.297$^{***}$ & $-$0.014 & 0.067$^{***}$ & 0.028$^{***}$ & $-$0.024$^{**}$ & 0.023$^{***}$ & $-$0.002 & 0.009 \\ 
+& (0.024) & (0.009) & (0.071) & (0.019) & (0.019) & (0.011) & (0.010) & (0.007) & (0.008) & (0.009) \\ 
+& & & & & & & & & & \\ 
+PRPER & 0.188$^{***}$ & 0.074$^{***}$ & $-$0.976$^{***}$ & $-$0.181$^{***}$ & 0.212$^{***}$ & 0.228$^{***}$ & 0.043 & 0.186$^{***}$ & 0.051$^{**}$ & 0.131$^{***}$ \\ 
+& (0.061) & (0.028) & (0.191) & (0.044) & (0.053) & (0.030) & (0.028) & (0.022) & (0.022) & (0.026) \\ 
+& & & & & & & & & & \\ 
+SECPER & 0.035 & 0.014 & $-$0.123$^{**}$ & $-$0.025 & 0.071$^{***}$ & 0.041$^{***}$ & 0.011 & 0.040$^{***}$ & 0.024$^{**}$ & 0.041$^{***}$ \\ 
+& (0.029) & (0.013) & (0.062) & (0.021) & (0.024) & (0.013) & (0.012) & (0.010) & (0.010) & (0.012) \\ 
+& & & & & & & & & & \\ 
+ACTV & $-$0.060$^{***}$ & $-$0.042$^{***}$ & 0.135$^{***}$ & 0.034$^{***}$ & $-$0.077$^{***}$ & $-$0.115$^{***}$ & $-$0.036$^{***}$ & $-$0.070$^{***}$ & $-$0.046$^{***}$ & $-$0.063$^{***}$ \\ 
+& (0.012) & (0.005) & (0.022) & (0.010) & (0.009) & (0.005) & (0.005) & (0.004) & (0.004) & (0.004) \\ 
+& & & & & & & & & & \\ 
+Constant & 0.009 & $-$0.020$^{*}$ & 0.165$^{***}$ & 0.021 & $-$0.101$^{***}$ & $-$0.065$^{***}$ & $-$0.016 & $-$0.051$^{***}$ & $-$0.006 & $-$0.032$^{***}$ \\ 
+& (0.027) & (0.012) & (0.045) & (0.019) & (0.025) & (0.013) & (0.011) & (0.009) & (0.010) & (0.012) \\ 
+& & & & & & & & & & \\ 
+\hline \\[-1.8ex] 
+Observations & 12,870 & 12,870 & 12,870 & 12,870 & 12,870 & 12,870 & 12,870 & 12,870 & 12,870 & 12,870 \\ 
+R$^{2}$ & 0.103 & 0.100 & 0.126 & 0.129 & 0.102 & 0.134 & 0.107 & 0.105 & 0.104 & 0.101 \\ 
+Adjusted R$^{2}$ & 0.099 & 0.097 & 0.123 & 0.126 & 0.098 & 0.131 & 0.104 & 0.102 & 0.100 & 0.098 \\ 
+Residual Std. Error (df = 12822) & 0.032 & 0.032 & 0.032 & 0.031 & 0.032 & 0.031 & 0.032 & 0.032 & 0.032 & 0.032 \\ 
+\hline 
+\hline \\[-1.8ex] 
+\textit{Note:}  & \multicolumn{10}{r}{$^{*}$p$<$0.1; $^{**}$p$<$0.05; $^{***}$p$<$0.01} \\ 
+\end{tabular}  %
 }
 \end{table} 
 
@@ -677,53 +795,53 @@ Residual Std. Error (df = 12840) & 32.757 & 32.809 & 32.386 & 32.326 & 32.815 & 
 \begin{tabular}{@{\extracolsep{5pt}}lcccccccccc} 
 \\[-1.8ex]\hline 
 \hline \\[-1.8ex] 
- & \multicolumn{10}{c}{\textit{Dependent variable:}} \\ 
+& \multicolumn{10}{c}{\textit{Dependent variable:}} \\ 
 \cline{2-11} 
 \\[-1.8ex] & \multicolumn{10}{c}{Case} \\ 
- & (1) & (2) & (3) & (4) & (5) & (6) & (7) & (8) & (9) & (10) \\ 
+& (1) & (2) & (3) & (4) & (5) & (6) & (7) & (8) & (9) & (10) \\ 
 \hline \\[-1.8ex] 
- TEMP & $-$0.266$^{***}$ &  &  &  &  &  &  &  &  &  \\ 
-  & (0.089) &  &  &  &  &  &  &  &  &  \\ 
-  & & & & & & & & & & \\ 
- WSPD &  & $-$0.327 &  &  &  &  &  &  &  &  \\ 
-  &  & (0.324) &  &  &  &  &  &  &  &  \\ 
-  & & & & & & & & & & \\ 
- PRES &  &  & 0.192$^{***}$ &  &  &  &  &  &  &  \\ 
-  &  &  & (0.074) &  &  &  &  &  &  &  \\ 
-  & & & & & & & & & & \\ 
- HUM &  &  &  & $-$0.015 &  &  &  &  &  &  \\ 
-  &  &  &  & (0.022) &  &  &  &  &  &  \\ 
-  & & & & & & & & & & \\ 
- O3 &  &  &  &  & $-$0.028 &  &  &  &  &  \\ 
-  &  &  &  &  & (0.021) &  &  &  &  &  \\ 
-  & & & & & & & & & & \\ 
- NO2 &  &  &  &  &  & 0.170$^{*}$ &  &  &  &  \\ 
-  &  &  &  &  &  & (0.094) &  &  &  &  \\ 
-  & & & & & & & & & & \\ 
- CO &  &  &  &  &  &  & $-$0.771 &  &  &  \\ 
-  &  &  &  &  &  &  & (1.298) &  &  &  \\ 
-  & & & & & & & & & & \\ 
- SO2 &  &  &  &  &  &  &  & $-$0.011 &  &  \\ 
-  &  &  &  &  &  &  &  & (0.055) &  &  \\ 
-  & & & & & & & & & & \\ 
- PM2.5 &  &  &  &  &  &  &  &  & 0.048$^{***}$ &  \\ 
-  &  &  &  &  &  &  &  &  & (0.015) &  \\ 
-  & & & & & & & & & & \\ 
- PM10 &  &  &  &  &  &  &  &  &  & 0.037$^{***}$ \\ 
-  &  &  &  &  &  &  &  &  &  & (0.013) \\ 
-  & & & & & & & & & & \\ 
- ACTV & $-$4.420$^{***}$ & $-$4.954$^{***}$ & $-$4.599$^{***}$ & $-$4.992$^{***}$ & $-$4.868$^{***}$ & $-$5.719$^{***}$ & $-$4.983$^{***}$ & $-$4.960$^{***}$ & $-$4.906$^{***}$ & $-$5.170$^{***}$ \\ 
-  & (0.810) & (0.935) & (0.831) & (0.920) & (0.887) & (1.300) & (0.961) & (0.935) & (0.925) & (0.996) \\ 
-  & & & & & & & & & & \\ 
+TEMP & $-$0.013$^{***}$ &  &  &  &  &  &  &  &  &  \\ 
+& (0.004) &  &  &  &  &  &  &  &  &  \\ 
+& & & & & & & & & & \\ 
+WSPD &  & $-$0.004 &  &  &  &  &  &  &  &  \\ 
+&  & (0.003) &  &  &  &  &  &  &  &  \\ 
+& & & & & & & & & & \\ 
+PRES &  &  & 0.074$^{***}$ &  &  &  &  &  &  &  \\ 
+&  &  & (0.023) &  &  &  &  &  &  &  \\ 
+& & & & & & & & & & \\ 
+HUM &  &  &  & $-$0.001 &  &  &  &  &  &  \\ 
+&  &  &  & (0.002) &  &  &  &  &  &  \\ 
+& & & & & & & & & & \\ 
+O3 &  &  &  &  & $-$0.004$^{**}$ &  &  &  &  &  \\ 
+&  &  &  &  & (0.002) &  &  &  &  &  \\ 
+& & & & & & & & & & \\ 
+NO2 &  &  &  &  &  & 0.014$^{***}$ &  &  &  &  \\ 
+&  &  &  &  &  & (0.003) &  &  &  &  \\ 
+& & & & & & & & & & \\ 
+CO &  &  &  &  &  &  & $-$0.003 &  &  &  \\ 
+&  &  &  &  &  &  & (0.004) &  &  &  \\ 
+& & & & & & & & & & \\ 
+SO2 &  &  &  &  &  &  &  & $-$0.001 &  &  \\ 
+&  &  &  &  &  &  &  & (0.005) &  &  \\ 
+& & & & & & & & & & \\ 
+PM2.5 &  &  &  &  &  &  &  &  & 0.016$^{***}$ &  \\ 
+&  &  &  &  &  &  &  &  & (0.003) &  \\ 
+& & & & & & & & & & \\ 
+PM10 &  &  &  &  &  &  &  &  &  & 0.013$^{***}$ \\ 
+&  &  &  &  &  &  &  &  &  & (0.003) \\ 
+& & & & & & & & & & \\ 
+ACTV & $-$0.037$^{***}$ & $-$0.041$^{***}$ & $-$0.038$^{***}$ & $-$0.042$^{***}$ & $-$0.041$^{***}$ & $-$0.048$^{***}$ & $-$0.042$^{***}$ & $-$0.041$^{***}$ & $-$0.041$^{***}$ & $-$0.043$^{***}$ \\ 
+& (0.002) & (0.002) & (0.002) & (0.002) & (0.002) & (0.002) & (0.002) & (0.002) & (0.002) & (0.002) \\ 
+& & & & & & & & & & \\ 
 \hline \\[-1.8ex] 
 Observations & 12,870 & 12,870 & 12,870 & 12,870 & 12,870 & 12,870 & 12,870 & 12,870 & 12,870 & 12,870 \\ 
 R$^{2}$ & 0.041 & 0.040 & 0.041 & 0.040 & 0.041 & 0.042 & 0.040 & 0.040 & 0.042 & 0.042 \\ 
 Adjusted R$^{2}$ & 0.029 & 0.028 & 0.029 & 0.028 & 0.028 & 0.029 & 0.028 & 0.028 & 0.030 & 0.029 \\ 
-F Statistic (df = 2; 12704) & 273.297$^{***}$ & 266.923$^{***}$ & 271.607$^{***}$ & 266.645$^{***}$ & 268.635$^{***}$ & 277.490$^{***}$ & 266.700$^{***}$ & 266.358$^{***}$ & 279.138$^{***}$ & 275.528$^{***}$ \\ 
+F Statistic (df = 3; 12703) & 182.444$^{***}$ & 178.173$^{***}$ & 181.315$^{***}$ & 177.997$^{***}$ & 179.281$^{***}$ & 185.280$^{***}$ & 178.037$^{***}$ & 177.802$^{***}$ & 186.316$^{***}$ & 183.940$^{***}$ \\ 
 \hline 
 \hline \\[-1.8ex] 
-\textit{}  & \multicolumn{10}{r}{$^{*}$p$<$0.1; $^{**}$p$<$0.05; $^{***}$p$<$0.01} \\ 
-\end{tabular}  %
+\textit{Note:}  & \multicolumn{10}{r}{$^{*}$p$<$0.1; $^{**}$p$<$0.05; $^{***}$p$<$0.01} \\ 
+\end{tabular}   %
 }
 \end{table} 
 
@@ -848,3 +966,1927 @@ F Statistic (df = 2; 12704) & 273.297$^{***}$ & 266.923$^{***}$ & 271.607$^{***}
 
 \newpage 
 # Code Appendix 
+
+Data Cleaning
+
+``` {r, eval = FALSE}
+dat = read.csv("~/Documents/UC BERKELEY/STATISTICS/STAT 156
+               /Final Project/GitHub/EnvCausal-replication/snapshot_data.csv")
+```
+
+``` {r, eval = FALSE}
+levels(dat$City) = c(levels(dat$City), "Xiamen", "Lhasa", "Urumqi", "Chongqing")
+dat$City[9] = "Xiamen"
+dat$City[14] = "Lhasa"
+dat$City[18] = "Urumqi"
+dat$City[21] = "Chongqing"
+```
+
+``` {r, eval = FALSE}
+filter(dat, abs(dat$PRIM + dat$SEC + dat$TERT - dat$GDP) >1)
+```
+
+``` {r, eval = FALSE}
+
+dat$SEC[dat$City == "Changchun"] = 2495.4
+dat$GDP[dat$City == "Xiamen"] = 5995.04
+dat$PRIM[dat$City == "Chongqing"] = 1551.42
+dat$GDP[dat$City == "Baoding"] = 3558
+dat$TERT[dat$City == "Huzhou"] = 1393.2
+filter(dat, abs(dat$PRIM + dat$SEC + dat$TERT - dat$GDP) >1)
+```
+
+``` {r, eval = FALSE}
+
+dat$POP = dat$POP*10
+dat$GDP = dat$GDP/6.91/10
+dat$PRIM = dat$PRIM/6.91/10
+dat$SEC = dat$SEC/6.91/10
+dat$TERT = dat$TERT/6.91/10
+dat$GDPpc = dat$GDP/dat$POP*1000
+dat$Prim. = dat$PRIM/dat$GDP
+dat$Sec.= dat$SEC/dat$GDP
+dat$Tert. = dat$TERT/dat$GDP
+dat$POPDENS = dat$POP/dat$Area*1000
+```
+
+``` {r, eval = FALSE}
+
+summary(dat)
+```
+
+``` {r, eval = FALSE}
+
+envdat = read.csv("~/Documents/UC BERKELEY/STATISTICS/STAT 156/Final Project
+/EnvCausal-main/data/time_series/
+                  3_day_moving_average/df_m3.csv")
+```
+
+``` {r, eval = FALSE}
+
+summary(envdat)
+```
+
+``` {r, eval = FALSE}
+
+# Libraries for data processing and math 
+import pandas as pd
+import numpy as np
+
+# Library for file path manipulation 
+import os
+
+# Library for Mandarin to English translation 
+import pinyin
+
+# Library for simplifying function calls 
+from functools import partial
+
+# This gets the file path of the data folder in EnvCausal-replication 
+root = os.path.dirname(os.getcwd())
+data_dir = os.path.join(root, 'data')
+
+# Set the file path for the cleaned snapshot data set
+snapshot_path = os.path.join(data_dir, 'cleaned_snapshot_data.csv')
+
+# Set the file path for the cleaned cluster data sets
+cluster1_path = os.path.join(data_dir, 'cluster1_snapshot.csv')
+cluster2_path = os.path.join(data_dir, 'cluster2_snapshot.csv')
+cluster3_path = os.path.join(data_dir, 'cluster3_snapshot.csv')
+
+# Set the file path for the 3-day moving average data set
+time_series_3_day_dir = os.path.join(data_dir,
+                                     'time_series', '3_day_moving_average')
+time_series_path = os.path.join(time_series_3_day_dir, 'df_m3.csv')
+
+# Read snapshots data set 
+snapshots = pd.read_csv(snapshot_path)
+
+# Rename features for clarity 
+column_name_map = {
+                   'POP':'Population (in thousands)',
+                   'Area':'City area (in km^2)',
+                   'POPDENS':'Population Density (people per km^2)',
+                   'GDP':'GDP (Billions USD)',
+                   'PRIM':'Primary sector (Billions USD)',
+                   'SEC':'Secondary sector (Billions USD)',
+                   'TERT':'Tertiary sector (Billions USD)',
+                   'Prim.':'Primary sector % of GDP',
+                   'Sec.':'Secondary sector % of GDP',
+                   'Tert.':'Tertiary sector % of GDP',
+                   'GDPpc':'GDP per capita (Billions USD per km^2)',
+                   'X.60yr.':'Elderly population %',
+                   'BED':'Hospital Beds (per thousand people)',
+                   'DOC':'Registered doctors (per thousand)',
+                   'NRS':'Registered nurses (per thousand)',
+                   'TVLR':'Wuhan travellers (thousands)',
+                   'TVLR.':'Wuhan travellers (per thousand pop.)',
+                   'ACTV':'Average degree of activeness (0-8)'
+                  }
+
+# Drop unnecessary columns 
+snapshots_general = snapshots.drop(
+    columns=[x for x in snapshots.columns if x not in column_name_map]).rename(
+    column_name_map, axis=1)
+
+# Compute summary statistics 
+first_quartile = partial(np.percentile, q=25, axis=0)
+third_quartile = partial(np.percentile, q=75, axis=0)
+summary_stats_snapshot  = snapshots_general.apply([np.mean, np.std, np.min,
+                first_quartile,
+                 np.median, third_quartile, np.max],
+                 axis=0, result_type='broadcast').T.round(2)
+
+# Clean up snapshot summary table 
+summary_stats_snapshot.columns = ['Mean',
+                         'SD',
+                         'Min',
+                         '25th %ile',
+                         'Median',
+                         '75th %ile',
+                         'Max']
+summary_stats_snapshot['IQR'] = summary_stats_snapshot[
+  '75th %ile'] - summary_stats_snapshot['25th %ile']
+
+# Display summary table 
+summary_stats_snapshot
+
+# Read time series data set 
+time_series = pd.read_csv(time_series_path)
+
+# Read time series data set 
+time_series = pd.read_csv(time_series_path)
+
+# Rename features for clarity
+column_name_map_2 = {
+                        'PM2.5':'PM2.5 (ug/m3)',
+                        'PM10':'PM10 (ug/m3)',
+                        'SO2':'SO2 (ug/m3)',
+                        'CO':'CO (mg/m3)' ,
+                        'NO2':'NO2 (ug/m3)',
+                        'O3':'O3 (ug/m3)',
+                        'HUM':'Relative humidity (%)',
+                        'PRES':'Atmospheric pressure (hpa)',
+                        'WSPD':'Wind speed (m/s)',
+                        'TEMP':'Average air temperature',
+                        'ACTV':'Degree of activeness',
+                        'Case':'New confirmed cases',
+                        'MORB%':'Morbidity rate'
+                    }
+
+# Define utility functions for Chinese to English (pinyin) character translation 
+def eng_translator(phrase_list):
+    translation_map = {}
+    for phrase in phrase_list:
+        pinyin_phrase = pinyin.get(phrase, format="strip", delimiter=" ")
+        pinyin_phrase = ''.join(pinyin_phrase.split(' '))
+        pinyin_phrase = pinyin_phrase[0].upper() + pinyin_phrase[1:]
+        translation_map[phrase] = pinyin_phrase
+    return translation_map
+
+def translate_column_to_eng(df, col):
+    unique_phrases = np.unique(df[col]).tolist()
+    translation_map = eng_translator(unique_phrases)
+    return df[col].map(translation_map)
+
+# time_series.columns.values[0] = 'Date'
+# time_series.columns.values[1] = 'City'
+# time_series['City'] = translate_column_to_eng(time_series, 'City')
+
+# Drop unnecessary columns 
+time_series = time_series.drop(
+    columns=[x for x in time_series.columns if x not in column_name_map_2]).rename(
+    column_name_map_2, axis=1)
+
+# Compute summary statistics 
+summary_stats_time_series = time_series.apply([np.mean, np.std, np.min, first_quartile,
+                 np.median, third_quartile, np.max],
+                 axis=0, result_type='broadcast').T.round(2)
+
+# Clean up snapshot summary table 
+summary_stats_time_series.columns = ['Mean',
+                         'SD',
+                         'Min',
+                         '25th %ile',
+                         'Median',
+                         '75th %ile',
+                         'Max']
+
+# Add IQR
+summary_stats_time_series['IQR'] = summary_stats_time_series['75th %ile'] - summary_stats_time_series['25th %ile']
+
+
+# Display summary table 
+summary_stats_time_series
+
+# Read cluster snapshots data set 
+cluster1 = pd.read_csv(cluster1_path)
+cluster2 = pd.read_csv(cluster2_path)
+cluster3 = pd.read_csv(cluster3_path)
+
+# Rename features for clarity 
+column_name_map = {
+                   'POP':'Population (in thousands)',
+                   'Area':'City area (in km^2)',
+                   'POPDENS':'Population Density (people per km^2)',
+                   'GDP':'GDP (Billions USD)',
+                   'PRIM':'Primary sector (Billions USD)',
+                   'SEC':'Secondary sector (Billions USD)',
+                   'TERT':'Tertiary sector (Billions USD)',
+                   'Prim.':'Primary sector % of GDP',
+                   'Sec.':'Secondary sector % of GDP',
+                   'Tert.':'Tertiary sector % of GDP',
+                   'GDPpc':'GDP per capita (Billions USD per km^2)',
+                   'X.60yr.':'Elderly population %',
+                   'BED':'Hospital Beds (per thousand people)',
+                   'DOC':'Registered doctors (per thousand)',
+                   'NRS':'Registered nurses (per thousand)',
+                   'TVLR':'Wuhan travellers (thousands)',
+                   'TVLR.':'Wuhan travellers (per thousand pop.)',
+                   'ACTV':'Average degree of activeness (0-8)'
+                  }
+
+# Drop unnecessary columns 
+cluster1_general = cluster1.drop(
+    columns=[x for x in cluster1.columns if x not in column_name_map]).rename(
+    column_name_map, axis=1)
+cluster2_general = cluster2.drop(
+    columns=[x for x in cluster2.columns if x not in column_name_map]).rename(
+    column_name_map, axis=1)
+cluster3_general = cluster3.drop(
+    columns=[x for x in cluster3.columns if x not in column_name_map]).rename(
+    column_name_map, axis=1)
+
+# Compute cluster-wise feature averages 
+summary_stats_cluster1  = cluster1_general.apply([np.mean],
+                 axis=0, result_type='broadcast').T.round(2)
+summary_stats_cluster2  = cluster2_general.apply([np.mean],
+                 axis=0, result_type='broadcast').T.round(2)
+summary_stats_cluster3  = cluster3_general.apply([np.mean],
+                 axis=0, result_type='broadcast').T.round(2)
+
+# Concatenate results together 
+mean_feature_by_cluster = pd.concat(
+    [summary_stats_cluster1, summary_stats_cluster2, summary_stats_cluster3],
+    axis=1)
+
+# Clean up snapshot summary table
+mean_feature_by_cluster.columns.values[0] = 'Cluster 1'
+mean_feature_by_cluster.columns.values[1] = 'Cluster 2'
+mean_feature_by_cluster.columns.values[2] = 'Cluster 3'
+
+# Display summary table 
+mean_feature_by_cluster
+```
+
+Replicating the Results:
+
+``` {r, eval = FALSE}
+# Libraries for data processing and math 
+import pandas as pd
+import numpy as np
+
+# Library for plotting 
+import matplotlib.pyplot as plt
+from mpl_toolkits import mplot3d
+
+# Library for file path manipulation 
+import os
+
+# Libraries for machine learning algorithms 
+from sklearn.preprocessing import StandardScaler
+from sklearn.decomposition import PCA
+from sklearn.cluster import KMeans
+
+# Set seed to control randomness
+np.random.seed(156)
+# This gets the file path of the data folder in EnvCausal-replication 
+root = os.path.dirname(os.getcwd())
+data_dir = os.path.join(root, 'data')
+
+# Set the file path for the cleaned snapshot data set
+snapshot_path = os.path.join(data_dir, 'cleaned_snapshot_data.csv')
+
+# Read snapshots data set 
+snapshots = pd.read_csv(snapshot_path, index_col=0).reset_index().iloc[:, 1:]
+
+# Scale the data 
+scaler = StandardScaler()
+city_labels = snapshots.iloc[:, 0]
+scaled_snapshots = scaler.fit_transform(snapshots.iloc[:, 1:])
+# Perform Principal Components Analysis 
+n_components = scaled_snapshots.shape[1] 
+pca = PCA(n_components=n_components, svd_solver='full')
+pca.fit(scaled_snapshots)
+# Separately fit PCA with 3 components following paper 
+pca_reduce = PCA(n_components=3, svd_solver='full') # project data onto 3 dimensions, as in paper 
+pca_reduce.fit(scaled_snapshots)
+snapshots_pca_3 = pca_reduce.transform(scaled_snapshots)
+city_df = pd.DataFrame({'City':city_labels})
+pca_df = pd.DataFrame(snapshots_pca_3)
+projection_df = pd.concat([city_df, pca_df], axis=1).set_index('City')
+explained_variances = pca.explained_variance_ratio_
+var_by_pc_num = np.cumsum(np.round(explained_variances, decimals=3)*100)
+# Scree Plot
+plt.title('Scree Plot for PCA on Snapshot Dataset')
+plt.xlabel('PC Rank')
+plt.ylabel('Eigenvalue')
+plt.xticks(np.arange(1, n_components+1))
+plt.plot(np.arange(1, n_components+1), explained_variances)
+plt.axvline(x=3, color='r', linestyle='dashed')
+plt.axhline(y=explained_variances[2], xmin=0, xmax=0.15, color='r', linestyle='dashed')
+plt.scatter(np.arange(1, n_components+1), explained_variances);
+# Cumulative Variance by PCs
+plt.title('Cumulative Variance Plot for PCA on Snapshot Data')
+plt.xlabel('Number of Top PCs')
+plt.ylabel('Cumulative Variance')
+plt.yticks(np.arange(0, 101, 10))
+plt.xticks(np.arange(1, n_components+1))
+plt.plot(np.arange(1, n_components+1), var_by_pc_num)
+plt.axvline(x=3, color='r', linestyle='dashed')
+plt.axhline(y=var_by_pc_num[2], xmin=0, xmax=0.15, color='r', linestyle='dashed')
+plt.scatter(np.arange(1, n_components+1), var_by_pc_num);
+# Generate plot of Magnitude of features present in top 3 PCs (Figure S1) 
+# Extract PC loadings 
+pca_3comp_df = pd.DataFrame(pca_reduce.components_)
+pca_3comp_df.columns = snapshots.columns[1:]
+cleaned_pca_3_df = pca_3comp_df.T.reset_index()
+cleaned_pca_3_df.columns = ['Variables', 'PC1', 'PC2', 'PC3']
+cleaned_pca_3_df = cleaned_pca_3_df.apply(
+    lambda x: np.abs(x) if x.name != 'Variables' else x)
+cleaned_pca_3_df.plot(x="Variables", y=['PC1', 'PC2', 'PC3'], kind="bar",
+                     figsize=(12,6), rot=30)
+plt.title('Magnitude of PC Loading by Feature')
+plt.ylabel('Magnitude')
+plt.xlabel('');
+# k-Means Inertia plot (Figure S2)
+inertias = []
+n_clusters_test = 9 # test up to 9 clusters in the snapshot data
+clusters_to_try = np.arange(1, n_clusters_test+1)
+for i in clusters_to_try:
+    km = KMeans(n_clusters=i)
+    km.fit_predict(projection_df)
+    curr_inertia = km.inertia_
+    inertias.append(curr_inertia)
+plt.title('Inertia Plot for 3-D PC Snapshot Data')
+plt.xlabel('Number of Clusters K')
+plt.ylabel('Inertia')
+plt.axvline(x=3, color='r', linestyle='dashed')
+plt.scatter(clusters_to_try, inertias)
+plt.plot(clusters_to_try, inertias);
+# Final k-Means clustering 
+num_clusters = 3 # generate 3 clusters of cities, consistent with the paper 
+kmeans = KMeans(n_clusters=num_clusters)
+kmeans.fit(projection_df)
+predicted_clusters = kmeans.labels_
+cluster_projection_df = projection_df.copy()
+cluster_projection_df['Cluster'] = predicted_clusters
+# Plot of clustered data in PC space (Figure S3)
+cluster_1 = cluster_projection_df[cluster_projection_df['Cluster'] == 0]
+cluster_2 = cluster_projection_df[cluster_projection_df['Cluster'] == 1]
+cluster_3 = cluster_projection_df[cluster_projection_df['Cluster'] == 2]
+
+# Keep PC indexing consistent with notation in paper 
+x1 = cluster_1.iloc[:, 1]
+y1 = cluster_1.iloc[:, 3]
+z1 = cluster_1.iloc[:, 2]
+x2 = cluster_2.iloc[:, 1]
+y2 = cluster_2.iloc[:, 3]
+z2 = cluster_2.iloc[:, 2]
+x3 = cluster_3.iloc[:, 1]
+y3 = cluster_3.iloc[:, 3]
+z3 = cluster_3.iloc[:, 2]
+
+fig = plt.figure(figsize = (6, 6))
+ax = plt.axes(projection ="3d")
+# Keep cluster labeling consistent with results in paper 
+ax.scatter3D(x3, y3, z3, color = "goldenrod", label='Cluster 1')
+ax.scatter3D(x1, y1, z1, color = "blue", label='Cluster 2')
+ax.scatter3D(x2, y2, z2, color = "green", label='Cluster 3')
+
+#plt.xticks(np.arange(-2,11,2))
+#plt.yticks(np.arange(-5, 11, 2.5)) # weird decision, since this compresses clusters together
+#ax.set_zticks(np.arange(-4, 7, 2))
+ax.set_xlabel('PC 1')
+ax.set_ylabel('PC 2')
+ax.set_zlabel('PC 3')
+plt.legend()
+ax.view_init(azim=-60, elev=30)
+plt.title("Results of k-Means Clustering on 3 PCs");
+# Libraries for data processing and math 
+import pandas as pd
+import numpy as np
+
+# Library for file path manipulation 
+import os
+
+# Libraries for machine learning algorithms 
+import xgboost as xgb
+from sklearn.model_selection import GridSearchCV
+from sklearn.metrics import r2_score
+
+# Set seed to control randomness
+np.random.seed(156)
+# This gets the file path of the data folder in EnvCausal-replication 
+root = os.path.dirname(os.getcwd())
+data_dir = os.path.join(root, 'data')
+
+# Set the file path for the time series datasets (9 total)
+c1_overall_path = os.path.join(data_dir, 'time_cluster_1.csv')
+c1_postpeak_path = os.path.join(data_dir, 'time_cluster_1_postpeak.csv')
+c1_spread_path = os.path.join(data_dir, 'time_cluster_1_spread.csv')
+c2_overall_path = os.path.join(data_dir, 'time_cluster_2.csv')
+c2_postpeak_path = os.path.join(data_dir, 'time_cluster_2_postpeak.csv')
+c2_spread_path = os.path.join(data_dir, 'time_cluster_2_spread.csv')
+c3_overall_path = os.path.join(data_dir, 'time_cluster_3.csv')
+c3_postpeak_path = os.path.join(data_dir, 'time_cluster_3_postpeak.csv')
+c3_spread_path = os.path.join(data_dir, 'time_cluster_3_spread.csv')
+
+# Read time series datasets 
+c1_overall = pd.read_csv(c1_overall_path).drop(columns=['Unnamed: 0', 'X.1'])
+c1_postpeak = pd.read_csv(c1_postpeak_path).drop(columns=['Unnamed: 0', 'X.1'])
+c1_spread = pd.read_csv(c1_spread_path).drop(columns=['Unnamed: 0', 'X.1'])
+c2_overall = pd.read_csv(c2_overall_path).drop(columns=['Unnamed: 0', 'X.1'])
+c2_postpeak = pd.read_csv(c2_postpeak_path).drop(columns=['Unnamed: 0', 'X.1'])
+c2_spread = pd.read_csv(c2_spread_path).drop(columns=['Unnamed: 0', 'X.1'])
+c3_overall = pd.read_csv(c3_overall_path).drop(columns=['Unnamed: 0', 'X.1'])
+c3_postpeak = pd.read_csv(c3_postpeak_path).drop(columns=['Unnamed: 0', 'X.1'])
+c3_spread = pd.read_csv(c3_spread_path).drop(columns=['Unnamed: 0', 'X.1'])
+
+# Set path for writing hyperparameter results 
+hyperparam_dir = os.path.join(data_dir, 'hyperparam_opt')
+# Define hyperparameters to grid search over (set by authors in Table S4 of extended paper)
+parameters = {
+              'njobs':[-1],
+              'learning_rate':[0.1], # this is the best value from the paper 
+              #'learning_rate': [0.01,0.05,0.1,0.2,0.3], 
+              'max_depth': np.arange(2, 6), # don't have time to run all combos from 2-10
+              'min_child_weight': np.arange(8, 11), # don't have time to run all combos from 2-10
+              'n_estimators':[50], # this is the best value from the paper 
+              #'n_estimators': [25,50,75,100,150,200,250,300],
+              'eval_metric': [r2_score],
+              'seed': [156],
+              'objective':['reg:squarederror']
+            }
+key_metrics = ['param_learning_rate', 
+               'param_max_depth', 
+               'param_min_child_weight', 
+              'param_n_estimators', 'mean_test_score']
+feature_set = ['PM2.5', 'PM10', 'SO2', 'CO', 'NO2', 'O3', 'HUM', 'PRES', 'WSPD', 'TEMP', 'ACTV', ]
+# Define X and Y variables 
+c1_overall_data = c1_overall[feature_set]
+c1_overall_target = c1_overall['Case']
+# Initialize XGBoost model and GridSearchCV process 
+xgb_c1_overall = xgb.XGBRegressor()
+c1_overall_gridsearch = GridSearchCV(estimator=xgb_c1_overall, param_grid=parameters,
+                                     n_jobs=-1, cv=5, verbose=2)
+# Train the models
+c1_overall_gridsearch.fit(c1_overall_data, c1_overall_target);
+c1_overall_result = pd.DataFrame(c1_overall_gridsearch.cv_results_).sort_values(
+    'mean_test_score', ascending=False).iloc[0][key_metrics].to_frame()
+c1_overall_dir = os.path.join(hyperparam_dir, 'c1_overall_best_XGB.csv')
+c1_overall_result.T.to_csv(c1_overall_dir, index=False)
+# Define X and Y variables 
+c1_postpeak_data = c1_postpeak[feature_set]
+c1_postpeak_target = c1_postpeak['Case']
+# Initialize XGBoost model and GridSearchCV process 
+xgb_c1_postpeak = xgb.XGBRegressor()
+c1_postpeak_gridsearch = GridSearchCV(estimator=xgb_c1_postpeak, param_grid=parameters,
+                                     n_jobs=-1, cv=5, verbose=2, scoring='r2')
+# Train the models
+c1_postpeak_gridsearch.fit(c1_postpeak_data, c1_postpeak_target);
+c1_postpeak_result = pd.DataFrame(c1_postpeak_gridsearch.cv_results_).sort_values(
+    'mean_test_score', ascending=False).iloc[0][key_metrics].to_frame()
+c1_postpeak_dir = os.path.join(hyperparam_dir, 'c1_postpeak_best_XGB.csv')
+c1_postpeak_result.T.to_csv(c1_postpeak_dir, index=False)
+# Define X and Y variables 
+c1_spread_data = c1_spread[feature_set]
+c1_spread_target = c1_spread['Case']
+# Initialize XGBoost model and GridSearchCV process 
+xgb_c1_spread = xgb.XGBRegressor()
+c1_spread_gridsearch = GridSearchCV(estimator=xgb_c1_spread, param_grid=parameters,
+                                     n_jobs=-1, cv=5, verbose=2, scoring='r2')
+# Train the models
+c1_spread_gridsearch.fit(c1_spread_data, c1_spread_target);
+c1_spread_result = pd.DataFrame(c1_spread_gridsearch.cv_results_).sort_values(
+    'mean_test_score', ascending=False).iloc[0][key_metrics].to_frame()
+c1_spread_dir = os.path.join(hyperparam_dir, 'c1_spread_best_XGB.csv')
+c1_spread_result.T.to_csv(c1_spread_dir, index=False)
+# Define X and Y variables 
+c2_overall_data = c2_overall[feature_set]
+c2_overall_target = c2_overall['Case']
+# Initialize XGBoost model and GridSearchCV process 
+xgb_c2_overall = xgb.XGBRegressor()
+c2_overall_gridsearch = GridSearchCV(estimator=xgb_c2_overall, param_grid=parameters,
+                                     n_jobs=-1, cv=5, verbose=2, scoring='r2')
+# Train the models
+c2_overall_gridsearch.fit(c2_overall_data, c2_overall_target);
+c2_overall_result = pd.DataFrame(c2_overall_gridsearch.cv_results_).sort_values(
+    'mean_test_score', ascending=False).iloc[0][key_metrics].to_frame()
+c2_overall_dir = os.path.join(hyperparam_dir, 'c2_overall_best_XGB.csv')
+c2_overall_result.T.to_csv(c2_overall_dir, index=False)
+
+# Define X and Y variables 
+c2_postpeak_data = c2_postpeak[feature_set]
+c2_postpeak_target = c2_postpeak['Case']
+# Initialize XGBoost model and GridSearchCV process 
+xgb_c2_postpeak = xgb.XGBRegressor()
+c2_postpeak_gridsearch = GridSearchCV(estimator=xgb_c2_postpeak, param_grid=parameters,
+                                     n_jobs=-1, cv=5, verbose=2, scoring='r2')
+# Train the models
+c2_postpeak_gridsearch.fit(c2_postpeak_data, c2_postpeak_target);
+c2_postpeak_result = pd.DataFrame(c2_postpeak_gridsearch.cv_results_).sort_values(
+    'mean_test_score', ascending=False).iloc[0][key_metrics].to_frame()
+c2_postpeak_dir = os.path.join(hyperparam_dir, 'c2_postpeak_best_XGB.csv')
+c2_postpeak_result.T.to_csv(c2_postpeak_dir, index=False)
+# Define X and Y variables 
+c2_spread_data = c2_spread[feature_set]
+c2_spread_target = c2_spread['Case']
+# Initialize XGBoost model and GridSearchCV process 
+xgb_c2_spread = xgb.XGBRegressor()
+c2_spread_gridsearch = GridSearchCV(estimator=xgb_c2_spread, param_grid=parameters,
+                                     n_jobs=-1, cv=5, verbose=2, scoring='r2')
+# Train the models
+c2_spread_gridsearch.fit(c2_spread_data, c2_spread_target);
+c2_spread_result = pd.DataFrame(c2_spread_gridsearch.cv_results_).sort_values(
+    'mean_test_score', ascending=False).iloc[0][key_metrics].to_frame()
+c2_spread_dir = os.path.join(hyperparam_dir, 'c2_spread_best_XGB.csv')
+c2_spread_result.T.to_csv(c2_spread_dir, index=False)
+# Define X and Y variables 
+c3_overall_data = c3_overall[feature_set]
+c3_overall_target = c3_overall['Case']
+# Initialize XGBoost model and GridSearchCV process 
+xgb_c3_overall = xgb.XGBRegressor()
+c3_overall_gridsearch = GridSearchCV(estimator=xgb_c3_overall, param_grid=parameters,
+                                     n_jobs=-1, cv=5, verbose=2, scoring='r2')
+# Train the models
+c3_overall_gridsearch.fit(c3_overall_data, c3_overall_target);
+c3_overall_result = pd.DataFrame(c3_overall_gridsearch.cv_results_).sort_values(
+    'mean_test_score', ascending=False).iloc[0][key_metrics].to_frame()
+c3_overall_dir = os.path.join(hyperparam_dir, 'c3_overall_best_XGB.csv')
+c3_overall_result.T.to_csv(c3_overall_dir, index=False)
+# Define X and Y variables 
+c3_postpeak_data = c3_postpeak[feature_set]
+c3_postpeak_target = c3_postpeak['Case']
+# Initialize XGBoost model and GridSearchCV process 
+xgb_c3_postpeak = xgb.XGBRegressor()
+c3_postpeak_gridsearch = GridSearchCV(estimator=xgb_c3_postpeak, param_grid=parameters,
+                                     n_jobs=-1, cv=5, verbose=2, scoring='r2')
+# Train the models
+c3_postpeak_gridsearch.fit(c3_postpeak_data, c3_postpeak_target);
+c3_postpeak_result = pd.DataFrame(c3_postpeak_gridsearch.cv_results_).sort_values(
+    'mean_test_score', ascending=False).iloc[0][key_metrics].to_frame()
+c3_postpeak_dir = os.path.join(hyperparam_dir, 'c3_postpeak_best_XGB.csv')
+c3_postpeak_result.T.to_csv(c3_postpeak_dir, index=False)
+
+
+# Define X and Y variables 
+c3_spread_data = c3_spread[feature_set]
+c3_spread_target = c3_spread['Case']
+# Initialize XGBoost model and GridSearchCV process 
+xgb_c3_spread = xgb.XGBRegressor()
+c3_spread_gridsearch = GridSearchCV(estimator=xgb_c3_spread, param_grid=parameters,
+                                     n_jobs=-1, cv=5, verbose=2, scoring='r2')
+# Train the models
+c3_spread_gridsearch.fit(c3_spread_data, c3_spread_target);
+c3_spread_result = pd.DataFrame(c3_spread_gridsearch.cv_results_).sort_values(
+    'mean_test_score', ascending=False).iloc[0][key_metrics].to_frame()
+c3_spread_dir = os.path.join(hyperparam_dir, 'c3_spread_best_XGB.csv')
+c3_spread_result.T.to_csv(c3_spread_dir, index=False)
+# Libraries for data processing and math 
+import pandas as pd
+import numpy as np
+
+# Library for data visualization
+import matplotlib.pyplot as plt
+
+# Library for file path manipulation 
+import os
+
+# Libraries for machine learning algorithms 
+import xgboost as xgb
+from sklearn.inspection import permutation_importance
+# import shap not using this due to time constraint 
+
+# Set seed to control randomness
+np.random.seed(156)
+
+# Set feautures to find importances of 
+feature_set = ['PM2.5', 'PM10', 'SO2', 'CO', 'NO2', 'O3', 'HUM', 'PRES', 'WSPD', 'TEMP', 'ACTV']
+# Load the data and train the XGBoost models
+root = os.path.dirname(os.getcwd())
+data_dir = os.path.join(root, 'data')
+### Cluster 1 Overall ###
+c1_overall_path = os.path.join(data_dir, 'time_cluster_1.csv')
+c1_overall = pd.read_csv(c1_overall_path)
+c1_overall_data = c1_overall[feature_set]
+c1_overall_target = c1_overall['Case']
+### Cluster 2 Overall ###
+c2_overall_path = os.path.join(data_dir, 'time_cluster_2.csv')
+c2_overall = pd.read_csv(c2_overall_path)
+c2_overall_data = c2_overall[feature_set]
+c2_overall_target = c2_overall['Case']
+### Cluster 3 Overall ###
+c3_overall_path = os.path.join(data_dir, 'time_cluster_3.csv')
+c3_overall = pd.read_csv(c3_overall_path)
+c3_overall_data = c3_overall[feature_set]
+c3_overall_target = c3_overall['Case']
+### Cluster 1 Overall Hyperparams ###
+max_depth1 = 2
+min_child_weight1 = 8
+n_estimators1 = 50
+learning_rate1 = 0.1
+### Cluster 2 Overall Hyperparams ###
+max_depth2 = 3
+min_child_weight2 = 8
+n_estimators2 = 50
+learning_rate2 = 0.1
+### Cluster 3 Overall Hyperparams ###
+max_depth3 = 5
+min_child_weight3 = 3
+n_estimators3 = 50
+learning_rate3 = 0.1
+### Train model for Cluster 1 ###
+xgb_c1_overall = xgb.XGBRegressor(max_depth=max_depth1,
+                                  min_child_weight=min_child_weight1,
+                                  n_estimators=n_estimators1,
+                                  learning_rate=learning_rate1)
+xgb_c1_overall.fit(c1_overall_data, c1_overall_target);
+### Train model for Cluster 2 ###
+xgb_c2_overall = xgb.XGBRegressor(max_depth=max_depth2,
+                                  min_child_weight=min_child_weight2,
+                                  n_estimators=n_estimators2,
+                                  learning_rate=learning_rate2)
+xgb_c2_overall.fit(c2_overall_data, c2_overall_target);
+### Train model for Cluster 3 ###
+xgb_c3_overall = xgb.XGBRegressor(max_depth=max_depth3,
+                                  min_child_weight=min_child_weight3,
+                                  n_estimators=n_estimators3,
+                                  learning_rate=learning_rate3)
+xgb_c3_overall.fit(c3_overall_data, c3_overall_target);
+
+# Plot Total Gain by Feature 
+fig, (ax1, ax2, ax3) = plt.subplots(3, figsize=(9,7))
+fig.suptitle('Total Gain by Feature and Cluster for Overall Time Series')
+# Create plot for Cluster 1 
+sorted_idx_gain_c1_overall = xgb_c1_overall.feature_importances_.argsort()
+ax1.barh(c1_overall_data.columns[sorted_idx_gain_c1_overall],
+         xgb_c1_overall.feature_importances_[sorted_idx_gain_c1_overall],
+         color='goldenrod', label='Cluster 1')
+# Create plot for Cluster 2
+sorted_idx_gain_c2_overall = xgb_c2_overall.feature_importances_.argsort()
+ax2.barh(c2_overall_data.columns[sorted_idx_gain_c2_overall],
+         xgb_c2_overall.feature_importances_[sorted_idx_gain_c2_overall],
+         color='Blue', label='Cluster 2')
+# Create plot for Cluster 3
+sorted_idx_gain_c3_overall = xgb_c3_overall.feature_importances_.argsort()
+ax3.barh(c3_overall_data.columns[sorted_idx_gain_c3_overall],
+         xgb_c3_overall.feature_importances_[sorted_idx_gain_c3_overall],
+         color='Green', label='Cluster 3')
+fig.legend();
+
+# Plot Permutation Importance by Feature 
+fig, (ax1, ax2, ax3) = plt.subplots(3, figsize=(9,7))
+fig.suptitle('Permutation Importance by Feature and Cluster for Overall Time Series')
+# Create plot for Cluster 1 
+perm_importance_c1_overall = permutation_importance(xgb_c1_overall, c1_overall_data, c1_overall_target)
+sorted_idx_perm_c1_overall = perm_importance_c1_overall.importances_mean.argsort()
+ax1.barh(c1_overall_data.columns[sorted_idx_perm_c1_overall],
+         perm_importance_c1_overall.importances_mean[sorted_idx_perm_c1_overall],
+         color='goldenrod', label='Cluster 1')
+# Create plot for Cluster 2 
+perm_importance_c2_overall = permutation_importance(xgb_c2_overall, c2_overall_data, c2_overall_target)
+sorted_idx_perm_c2_overall = perm_importance_c2_overall.importances_mean.argsort()
+ax2.barh(c2_overall_data.columns[sorted_idx_perm_c2_overall],
+         perm_importance_c2_overall.importances_mean[sorted_idx_perm_c2_overall],
+         color='blue', label='Cluster 2')
+# Create plot for Cluster 3 
+perm_importance_c3_overall = permutation_importance(xgb_c3_overall, c3_overall_data, c3_overall_target)
+sorted_idx_perm_c3_overall = perm_importance_c3_overall.importances_mean.argsort()
+ax3.barh(c3_overall_data.columns[sorted_idx_perm_c3_overall],
+         perm_importance_c3_overall.importances_mean[sorted_idx_perm_c3_overall],
+         color='green', label='Cluster 3')
+fig.legend();
+# Load the data and train the XGBoost models
+root = os.path.dirname(os.getcwd())
+data_dir = os.path.join(root, 'data')
+### Cluster 1 Overall ###
+c1_postpeak_path = os.path.join(data_dir, 'time_cluster_1_postpeak.csv')
+c1_postpeak = pd.read_csv(c1_postpeak_path)
+c1_postpeak_data = c1_postpeak[feature_set]
+c1_postpeak_target = c1_postpeak['Case']
+### Cluster 2 Overall ###
+c2_postpeak_path = os.path.join(data_dir, 'time_cluster_2_postpeak.csv')
+c2_postpeak = pd.read_csv(c2_postpeak_path)
+c2_postpeak_data = c2_postpeak[feature_set]
+c2_postpeak_target = c2_postpeak['Case']
+### Cluster 3 Overall ###
+c3_postpeak_path = os.path.join(data_dir, 'time_cluster_3_postpeak.csv')
+c3_postpeak = pd.read_csv(c3_postpeak_path)
+c3_postpeak_data = c3_postpeak[feature_set]
+c3_postpeak_target = c3_postpeak['Case']
+### Cluster 1 Postpeak Hyperparams ###
+max_depth1 = 4
+min_child_weight1 = 8
+n_estimators1 = 50
+learning_rate1 = 0.1
+### Cluster 2 Postpeak Hyperparams ###
+max_depth2 = 3
+min_child_weight2 = 8
+n_estimators2 = 50
+learning_rate2 = 0.1
+### Cluster 3 Postpeak Hyperparams ###
+max_depth3 = 5
+min_child_weight3 = 6
+n_estimators3 = 50
+learning_rate3 = 0.1
+### Train model for Cluster 1 ###
+xgb_c1_postpeak = xgb.XGBRegressor(max_depth=max_depth1,
+                                  min_child_weight=min_child_weight1,
+                                  n_estimators=n_estimators1,
+                                  learning_rate=learning_rate1)
+xgb_c1_postpeak.fit(c1_postpeak_data, c1_postpeak_target);
+### Train model for Cluster 2 ###
+xgb_c2_postpeak = xgb.XGBRegressor(max_depth=max_depth2,
+                                  min_child_weight=min_child_weight2,
+                                  n_estimators=n_estimators2,
+                                  learning_rate=learning_rate2)
+xgb_c2_postpeak.fit(c2_postpeak_data, c2_postpeak_target);
+### Train model for Cluster 3 ###
+xgb_c3_postpeak = xgb.XGBRegressor(max_depth=max_depth3,
+                                  min_child_weight=min_child_weight3,
+                                  n_estimators=n_estimators3,
+                                  learning_rate=learning_rate3)
+xgb_c3_postpeak.fit(c3_postpeak_data, c3_postpeak_target);
+
+# Plot Total Gain by Feature 
+fig, (ax1, ax2, ax3) = plt.subplots(3, figsize=(9,7))
+fig.suptitle('Total Gain by Feature and Cluster for Postpeak Time Series')
+# Create plot for Cluster 1 
+sorted_idx_gain_c1_postpeak = xgb_c1_postpeak.feature_importances_.argsort()
+ax1.barh(c1_postpeak_data.columns[sorted_idx_gain_c1_postpeak],
+         xgb_c1_postpeak.feature_importances_[sorted_idx_gain_c1_postpeak],
+         color='goldenrod', label='Cluster 1')
+# Create plot for Cluster 2
+sorted_idx_gain_c2_postpeak = xgb_c2_postpeak.feature_importances_.argsort()
+ax2.barh(c2_postpeak_data.columns[sorted_idx_gain_c2_postpeak],
+         xgb_c2_postpeak.feature_importances_[sorted_idx_gain_c2_postpeak],
+         color='blue', label='Cluster 2')
+# Create plot for Cluster 3 
+sorted_idx_gain_c3_postpeak = xgb_c3_postpeak.feature_importances_.argsort()
+ax3.barh(c3_postpeak_data.columns[sorted_idx_gain_c3_postpeak],
+         xgb_c3_postpeak.feature_importances_[sorted_idx_gain_c3_postpeak],
+         color='green', label='Cluster 3')
+fig.legend();
+# Plot Permutation Importance by Feature 
+fig, (ax1, ax2, ax3) = plt.subplots(3, figsize=(9,7))
+fig.suptitle('Permutation Importance by Feature and Cluster for Postpeak Time Series')
+# Create plot for Cluster 1 
+perm_importance_c1_postpeak = permutation_importance(xgb_c1_postpeak, c1_postpeak_data, c1_postpeak_target)
+sorted_idx_perm_c1_postpeak = perm_importance_c1_postpeak.importances_mean.argsort()
+ax1.barh(c1_postpeak_data.columns[sorted_idx_perm_c1_postpeak],
+         perm_importance_c1_postpeak.importances_mean[sorted_idx_perm_c1_postpeak],
+         color='goldenrod', label='Cluster 1')
+# Create plot for Cluster 2 
+perm_importance_c2_postpeak = permutation_importance(xgb_c2_postpeak, c2_postpeak_data, c2_postpeak_target)
+sorted_idx_perm_c2_postpeak = perm_importance_c2_postpeak.importances_mean.argsort()
+ax2.barh(c2_postpeak_data.columns[sorted_idx_perm_c2_postpeak],
+         perm_importance_c2_postpeak.importances_mean[sorted_idx_perm_c2_postpeak],
+         color='blue', label='Cluster 2')
+# Create plot for Cluster 3 
+perm_importance_c3_postpeak = permutation_importance(xgb_c3_postpeak, c3_postpeak_data, c3_postpeak_target)
+sorted_idx_perm_c3_postpeak = perm_importance_c3_postpeak.importances_mean.argsort()
+ax3.barh(c3_postpeak_data.columns[sorted_idx_perm_c3_postpeak],
+         perm_importance_c3_postpeak.importances_mean[sorted_idx_perm_c3_postpeak],
+         color='green', label='Cluster 3')
+fig.legend();
+# Load the data and train the XGBoost models
+root = os.path.dirname(os.getcwd())
+data_dir = os.path.join(root, 'data')
+### Cluster 1 Overall ###
+c1_spread_path = os.path.join(data_dir, 'time_cluster_1_spread.csv')
+c1_spread = pd.read_csv(c1_spread_path)
+c1_spread_data = c1_spread[feature_set]
+c1_spread_target = c1_spread['Case']
+### Cluster 2 Overall ###
+c2_spread_path = os.path.join(data_dir, 'time_cluster_2_spread.csv')
+c2_spread = pd.read_csv(c2_spread_path)
+c2_spread_data = c2_spread[feature_set]
+c2_spread_target = c2_spread['Case']
+### Cluster 3 Overall ###
+c3_spread_path = os.path.join(data_dir, 'time_cluster_3_spread.csv')
+c3_spread = pd.read_csv(c3_spread_path)
+c3_spread_data = c3_spread[feature_set]
+c3_spread_target = c3_spread['Case']
+### Cluster 1 Spread Hyperparams ###
+max_depth1 = 4
+min_child_weight1 = 9
+n_estimators1 = 50
+learning_rate1 = 0.1
+### Cluster 2 Postpeak Hyperparams ###
+max_depth2 = 4
+min_child_weight2 = 9
+n_estimators2 = 50
+learning_rate2 = 0.1
+### Cluster 3 Postpeak Hyperparams ###
+max_depth3 = 4
+min_child_weight3 = 8
+n_estimators3 = 50
+learning_rate3 = 0.1
+### Train model for Cluster 1 ###
+xgb_c1_spread = xgb.XGBRegressor(max_depth=max_depth1,
+                                  min_child_weight=min_child_weight1,
+                                  n_estimators=n_estimators1,
+                                  learning_rate=learning_rate1)
+xgb_c1_spread.fit(c1_spread_data, c1_spread_target);
+### Train model for Cluster 2 ###
+xgb_c2_spread = xgb.XGBRegressor(max_depth=max_depth2,
+                                  min_child_weight=min_child_weight2,
+                                  n_estimators=n_estimators2,
+                                  learning_rate=learning_rate2)
+xgb_c2_spread.fit(c2_spread_data, c2_spread_target);
+### Train model for Cluster 3 ###
+xgb_c3_spread = xgb.XGBRegressor(max_depth=max_depth3,
+                                  min_child_weight=min_child_weight3,
+                                  n_estimators=n_estimators3,
+                                  learning_rate=learning_rate3)
+xgb_c3_spread.fit(c3_spread_data, c3_spread_target);
+ Plot Total Gain by Feature 
+fig, (ax1, ax2, ax3) = plt.subplots(3, figsize=(9,7))
+fig.suptitle('Total Gain by Feature and Cluster for Spread Time Series')
+# Create plot for Cluster 1 
+sorted_idx_gain_c1_spread = xgb_c1_spread.feature_importances_.argsort()
+ax1.barh(c1_spread_data.columns[sorted_idx_gain_c1_spread],
+         xgb_c1_spread.feature_importances_[sorted_idx_gain_c1_spread],
+         color='goldenrod', label='Cluster 1')
+# Create plot for Cluster 2
+sorted_idx_gain_c2_spread = xgb_c2_spread.feature_importances_.argsort()
+ax2.barh(c2_spread_data.columns[sorted_idx_gain_c2_spread],
+         xgb_c2_spread.feature_importances_[sorted_idx_gain_c2_spread],
+         color='blue', label='Cluster 2')
+# Create plot for Cluster 3 
+sorted_idx_gain_c3_spread = xgb_c3_spread.feature_importances_.argsort()
+ax3.barh(c3_spread_data.columns[sorted_idx_gain_c3_spread],
+         xgb_c3_spread.feature_importances_[sorted_idx_gain_c3_spread],
+         color='green', label='Cluster 3')
+fig.legend();
+ Plot Total Gain by Feature 
+fig, (ax1, ax2, ax3) = plt.subplots(3, figsize=(9,7))
+fig.suptitle('Total Gain by Feature and Cluster for Spread Time Series')
+# Create plot for Cluster 1 
+sorted_idx_gain_c1_spread = xgb_c1_spread.feature_importances_.argsort()
+ax1.barh(c1_spread_data.columns[sorted_idx_gain_c1_spread],
+         xgb_c1_spread.feature_importances_[sorted_idx_gain_c1_spread],
+         color='goldenrod', label='Cluster 1')
+# Create plot for Cluster 2
+sorted_idx_gain_c2_spread = xgb_c2_spread.feature_importances_.argsort()
+ax2.barh(c2_spread_data.columns[sorted_idx_gain_c2_spread],
+         xgb_c2_spread.feature_importances_[sorted_idx_gain_c2_spread],
+         color='blue', label='Cluster 2')
+# Create plot for Cluster 3 
+sorted_idx_gain_c3_spread = xgb_c3_spread.feature_importances_.argsort()
+ax3.barh(c3_spread_data.columns[sorted_idx_gain_c3_spread],
+         xgb_c3_spread.feature_importances_[sorted_idx_gain_c3_spread],
+         color='green', label='Cluster 3')
+fig.legend();
+# Libraries for data processing and math 
+import pandas as pd
+import numpy as np
+
+# Library for causal estimation 
+import dowhy
+from dowhy import CausalModel
+import econml
+from sklearn.preprocessing import MinMaxScaler
+from causal_estimate import ate_estimate 
+
+# Library for file path manipulation 
+import os
+
+# Set seed to control randomness
+np.random.seed(156)
+# Load the data and train the XGBoost models
+root = os.path.dirname(os.getcwd())
+data_dir = os.path.join(root, 'data')
+### Cluster 1 Overall ###
+c1_overall_path = os.path.join(data_dir, 'time_cluster_1.csv')
+c1_overall = pd.read_csv(c1_overall_path)
+all_vars = ['days', 'ACTV', 'TEMP', 'HUM', 'WSPD', 'PRES', 'NO2', 'O3', 'PM2.5', 'PM10', 'SO2', 'CO', 'Case']
+cluster1_df = c1_overall[all_vars]
+# Normalize the data 
+scaler = MinMaxScaler()
+normalized = scaler.fit_transform(cluster1_df.values)
+cluster1_df_norm = pd.DataFrame(normalized)
+cluster1_df_norm.columns = cluster1_df.columns
+cluster1_df_norm.head()
+causal_graph = """
+digraph {
+days; 
+ACTV; 
+TEMP; 
+U[label="Unobserved Confounders"];
+HUM; 
+WSPD; 
+PRES; 
+NO2; 
+O3; 
+PM2.5; 
+PM10; 
+SO2; 
+CO; 
+Case; 
+days->ACTV; days->TEMP; days->Case; 
+U->ACTV; U->TEMP; U->PRES; U->O3; U->HUM; U->WSPD; 
+ACTV->NO2; ACTV->Case; ACTV->PM2.5; ACTV->PM10; ACTV->SO2; ACTV->CO; 
+PRES->NO2; PRES->O3; PRES->PM2.5; PRES->PM10; PRES->SO2; PRES->C0; 
+TEMP->PRES; TEMP->HUM; 
+HUM->PRES; HUM->N02; HUM->O3; HUM->PM2.5; HUM->PM10; HUM->SO2; HUM->CO;
+WSPD->N02; WSPD->O3; WSPD->PM2.5; WSPD->PM10; WSPD->SO2; WSPD->CO; 
+NO2->O3; 
+}
+"""
+from IPython.display import Image, display
+model= CausalModel(
+        data=cluster1_df,
+        graph=causal_graph.replace("\n", " "),
+        treatment='NO2',
+        outcome='Case')
+model.view_model()
+# ATE estimation 
+treatments = ['PRES', 'TEMP', 'HUM', 'WSPD', 'NO2', 'O3', 'PM2.5', 'PM10', 'SO2', 'CO']
+curr_treatments = []
+ate_linear1 = []
+ate_forest1 = []
+for treatment in treatments:
+    try:
+        first, second = ate_estimate(treatment=treatment, data=cluster1_df_norm, outcome='Case', causal_graph=causal_graph)
+        curr_treatments.append(treatment)
+        ate_linear1.append(first)
+        ate_forest1.append(second)
+    except Exception as e:
+        continue 
+for idx in range(len(curr_treatments)):
+    print(f'Treatment: {treatments[idx]}')
+    print('-----------------------------')
+    print(f'ATE Linear: {ate_linear1[idx]}')
+    print(f'ATE Forest: {ate_forest1[idx]}')
+# Load the data and train the XGBoost models
+root = os.path.dirname(os.getcwd())
+data_dir = os.path.join(root, 'data')
+### Cluster 2 Overall ###
+c2_overall_path = os.path.join(data_dir, 'time_cluster_2.csv')
+c2_overall = pd.read_csv(c2_overall_path)
+all_vars = ['days', 'ACTV', 'TEMP', 'HUM', 'WSPD', 'PRES', 'NO2', 'O3', 'PM2.5', 'PM10', 'SO2', 'CO', 'Case']
+cluster2_df = c2_overall[all_vars]
+# Normalize the data 
+scaler = MinMaxScaler()
+normalized = scaler.fit_transform(cluster2_df.values)
+cluster2_df_norm = pd.DataFrame(normalized)
+cluster2_df_norm.columns = cluster2_df.columns
+cluster2_df_norm.head()
+# ATE estimation 
+treatments = ['PRES', 'TEMP', 'HUM', 'WSPD', 'NO2', 'O3', 'PM2.5', 'PM10', 'SO2', 'CO']
+curr_treatments = []
+ate_linear2 = []
+ate_forest2 = []
+for treatment in treatments:
+    try:
+        first, second = ate_estimate(treatment=treatment, data=cluster2_df_norm, outcome='Case', causal_graph=causal_graph)
+        curr_treatments.append(treatment)
+        ate_linear2.append(first)
+        ate_forest2.append(second)
+    except Exception as e:
+        continue 
+for idx in range(len(curr_treatments)):
+    print(f'Treatment: {curr_treatments[idx]}')
+    print('-----------------------------')
+    print(f'ATE Linear: {ate_linear2[idx]}')
+    print(f'ATE Forest: {ate_forest2[idx]}')
+# Load the data and train the XGBoost models
+root = os.path.dirname(os.getcwd())
+data_dir = os.path.join(root, 'data')
+### Cluster 3 Overall ###
+c3_overall_path = os.path.join(data_dir, 'time_cluster_3.csv')
+c3_overall = pd.read_csv(c3_overall_path)
+all_vars = ['days', 'ACTV', 'TEMP', 'HUM', 'WSPD', 'PRES', 'NO2', 'O3', 'PM2.5', 'PM10', 'SO2', 'CO', 'Case']
+cluster3_df = c3_overall[all_vars]
+# Normalize the data 
+scaler = MinMaxScaler()
+normalized = scaler.fit_transform(cluster3_df.values)
+cluster3_df_norm = pd.DataFrame(normalized)
+cluster3_df_norm.columns = cluster3_df.columns
+cluster3_df_norm.head()
+# ATE estimation 
+treatments = ['PRES', 'TEMP', 'HUM', 'WSPD', 'NO2', 'O3', 'PM2.5', 'PM10', 'SO2', 'CO']
+curr_treatments = []
+ate_linear3 = []
+ate_forest3 = []
+for treatment in treatments:
+    try:
+        first, second = ate_estimate(treatment=treatment, data=cluster3_df_norm, outcome='Case', causal_graph=causal_graph)
+        curr_treatments.append(treatment)
+        ate_linear3.append(first)
+        ate_forest3.append(second)
+    except Exception as e:
+        continue 
+for idx in range(len(curr_treatments)):
+    print(f'Treatment: {curr_treatments[idx]}')
+    print('-----------------------------')
+    print(f'ATE Linear: {ate_linear3[idx]}')
+    print(f'ATE Forest: {ate_forest3[idx]}')
+import dowhy
+import econml
+
+def ate_estimate(treatment, data, outcome, causal_graph):
+    inspect_datasets = True
+    inspect_models = True
+    inspect_identified_estimands = True
+    inspect_estimates = True
+    inspect_refutations = True
+    dowhy.causal_refuter.CausalRefuter.DEFAULT_NUM_SIMULATIONS = 100
+    dataset = data
+    causal_graph = causal_graph
+    model = dowhy.CausalModel(data = dataset,
+                        treatment = treatment,
+                        outcome = outcome,
+                        graph = causal_graph.replace("\n", " "))
+    # print("####### Model #############################################################################################")
+    # print("Common Causes:",model._common_causes)
+    # print("Effect Modifiers:",model._effect_modifiers)
+    # print("Instruments:",model._instruments)
+    # print("Outcome:",model._outcome)
+    # print("Treatment:",model._treatment)
+    # print("#############################################################################################################")
+    estimand = model.identify_effect(proceed_when_unidentifiable=True)
+    # print("####### Identified Estimand #####################################################################################")
+    # print(estimand)
+    # print("###################################################################################################################")
+    estimate_li = model.estimate_effect(estimand,method_name = "backdoor.linear_regression", method_params = None)
+    estimate_forest = model.estimate_effect(estimand,method_name ="backdoor.econml.orf.DMLOrthoForest",
+                                            method_params = {"init_params":{"n_jobs":-1},"fit_params":{}})
+    #Linear Results
+    #print("####### Linear Estimate ################################################################################")
+    # print("*** Class Name ***")
+    # print(estimate_li.params['estimator_class'])
+    # # print("*** Treatment Name ***")
+    # print(model._treatment)
+    li_estimate = estimate_li.value
+    #print(li_estimate)
+    #print("########################################################################################################")
+    #Forest Results
+    #print("####### Forest Estimate#################################################################################")
+    # print("*** Class Name ***")
+    # print(estimate_forest.params['estimator_class'])
+    # print("*** Treatment Name ***")
+    # print(model._treatment)
+    forest_estimate = estimate_forest.value
+     #print(estimate_forest.value)
+    #print("########################################################################################################")
+    return li_estimate, forest_estimate
+```
+
+Replicating Robustness Checks
+
+``` {r, eval = FALSE}
+
+import dowhy
+import econml
+def ate_estimate(treatment, data, outcome, causal_graph):
+dowhy.causal_refuter.CausalRefuter.DEFAULT_NUM_SIMULATIONS = 100
+dataset = data
+causal_graph = causal_graph
+model = dowhy.CausalModel(data = dataset,
+treatment = treatment,
+outcome = outcome,
+graph = causal_graph.replace("\n", " "))
+# print("####### Model #############################################################################################")
+# print("Common Causes:",model._common_causes)
+# print("Effect Modifiers:",model._effect_modifiers)
+# print("Instruments:",model._instruments)
+# print("Outcome:",model._outcome)
+# print("Treatment:",model._treatment)
+# print("#############################################################################################################")
+estimand = model.identify_effect(proceed_when_unidentifiable=True)
+# print("####### Identified Estimand #####################################################################################")
+# print(estimand)
+# print("###################################################################################################################")
+estimate_li = model.estimate_effect(estimand,method_name = "backdoor.linear_regression", method_params estimate_forest = model.estimate_effect(estimand,method_name ="backdoor.econml.orf.DMLOrthoForest",
+method_params = {"init_params":{"n_jobs":-1},"fit_params":{}})
+#Linear Results
+#print("####### Linear Estimate ################################################################################")
+# print("*** Class Name ***")
+# print(estimate_li.params['estimator_class'])
+# # print("*** Treatment Name ***")
+5
+# print(model._treatment)
+li_estimate = estimate_li.value
+#print(li_estimate)
+#print("########################################################################################################")
+#Forest Results
+#print("####### Forest Estimate#################################################################################")
+# print("*** Class Name ***")
+# print(estimate_forest.params['estimator_class'])
+# print("*** Treatment Name ***")
+# print(model._treatment)
+forest_estimate = estimate_forest.value
+#print(estimate_forest.value)
+#print("########################################################################################################")
+return li_estimate, forest_estimate
+def ate_estimate_refutation(treatment, data, outcome, causal_graph, model_type='nonlinear', refutation_type=dowhy.causal_refuter.CausalRefuter.DEFAULT_NUM_SIMULATIONS = 100
+dataset = data
+causal_graph = causal_graph
+model = dowhy.CausalModel(data = dataset,
+treatment = treatment,
+outcome = outcome,
+graph = causal_graph.replace("\n", " "))
+estimand = model.identify_effect(proceed_when_unidentifiable=True)
+if model_type == 'nonlinear':
+estimate = model.estimate_effect(estimand,method_name ="backdoor.econml.orf.DMLOrthoForest",
+method_params = {"init_params":{"n_jobs":-1},"fit_params":{}})
+else:
+estimate = model.estimate_effect(estimand,method_name = "backdoor.linear_regression",
+method_params = None)
+if refutation_type == 'RCC':
+refutation = model.refute_estimate(estimand, estimate, method_name='random_common_cause')
+6
+else:
+refutation = model.refute_estimate(estimand, estimate, method_name='placebo_treatment_refuter')
+return estimate, refutation
+%load_ext autoreload
+%autoreload 2
+# Libraries for data processing and math
+import pandas as pd
+import numpy as np
+# Library for causal estimation
+import dowhy
+from dowhy import CausalModel
+import econml
+from sklearn.preprocessing import MinMaxScaler
+from causal_estimate import ate_estimate_refutation
+# Library for file path manipulation
+import os
+# Set seed to control randomness
+np.random.seed(156)
+# Declare Causal Graph for all time series data
+causal_graph = """
+digraph {
+days;
+ACTV;
+TEMP;
+U[label="Unobserved Confounders"];
+HUM;
+WSPD;
+PRES;
+7
+NO2;
+O3;
+PM2.5;
+PM10;
+SO2;
+CO;
+Case;
+days->ACTV; days->TEMP; days->Case;
+U->ACTV; U->TEMP; U->PRES; U->O3; U->HUM; U->WSPD;
+ACTV->NO2; ACTV->Case; ACTV->PM2.5; ACTV->PM10; ACTV->SO2; ACTV->CO;
+PRES->NO2; PRES->O3; PRES->PM2.5; PRES->PM10; PRES->SO2; PRES->C0;
+TEMP->PRES; TEMP->HUM;
+HUM->PRES; HUM->N02; HUM->O3; HUM->PM2.5; HUM->PM10; HUM->SO2; HUM->CO;
+WSPD->N02; WSPD->O3; WSPD->PM2.5; WSPD->PM10; WSPD->SO2; WSPD->CO;
+NO2->O3;
+}
+"""
+# Load the data and train the XGBoost models
+root = os.path.dirname(os.getcwd())
+data_dir = os.path.join(root, 'data')
+### Cluster 1 Overall ###
+c1_overall_path = os.path.join(data_dir, 'time_cluster_1.csv')
+c1_overall = pd.read_csv(c1_overall_path)
+all_vars = ['days', 'ACTV', 'TEMP', 'HUM', 'WSPD', 'PRES', 'NO2', 'O3', 'PM2.5', 'PM10', 'SO2', 'CO', 'Casecluster1_df = c1_overall[all_vars]
+# Normalize the data
+scaler = MinMaxScaler()
+normalized = scaler.fit_transform(cluster1_df.values)
+cluster1_df_norm = pd.DataFrame(normalized)
+cluster1_df_norm.columns = cluster1_df.columns
+cluster1_df_norm.head()
+# ATE refutation
+8
+treatments = ['PRES', 'TEMP', 'HUM', 'WSPD', 'NO2', 'O3', 'PM2.5', 'PM10', 'SO2', 'CO']
+curr_treatments = []
+#est_linear2 = []
+#ate_forest2 = []
+for treatment in treatments:
+try:
+est_ols, ref_ols = ate_estimate_refutation(treatment=treatment, data=cluster1_df_norm, outcome='causal_graph=causal_graph, model_type='linear', refutation_type='RCC')
+# est_forest, ref_forest = ate_estimate_refutation(treatment=treatment, data=cluster1_df_norm, outcome=# causal_graph=causal_graph, model_type='nonlinear', refutation_type='RCCprint(f'Treatment: {treatment}')
+print('-----------------------------')
+# print(f'OLS Treatment Effect: {est_ols}')
+print(f'OLS RCC Treatment Effect: {ref_ols}')
+# print(f'Forest Treatment Effect: {est_forest}')
+# print(f'Forest RCC Treatment Effect: {ref_forest}')
+except Exception as e:
+print(e)
+continue
+# ATE refutation
+treatments = ['PRES', 'TEMP', 'HUM', 'WSPD', 'NO2', 'O3', 'PM2.5', 'PM10', 'SO2', 'CO']
+curr_treatments = []
+#est_linear2 = []
+#ate_forest2 = []
+for treatment in treatments:
+try:
+est_ols, ref_ols = ate_estimate_refutation(treatment=treatment, data=cluster1_df_norm, outcome='causal_graph=causal_graph, model_type='linear', refutation_type='PT')
+# est_forest, ref_forest = ate_estimate_refutation(treatment=treatment, data=cluster1_df_norm, outcome=# causal_graph=causal_graph, model_type='nonlinear', refutation_type='RCCprint(f'Treatment: {treatment}')
+print('-----------------------------')
+9
+# print(f'OLS Treatment Effect: {est_ols}')
+print(f'OLS RCC Treatment Effect: {ref_ols}')
+# print(f'Forest Treatment Effect: {est_forest}')
+# print(f'Forest RCC Treatment Effect: {ref_forest}')
+except Exception as e:
+print(e)
+continue
+# Load the data and train the XGBoost models
+root = os.path.dirname(os.getcwd())
+data_dir = os.path.join(root, 'data')
+### Cluster 1 Overall ###
+c1_overall_path = os.path.join(data_dir, 'time_cluster_1_spread.csv')
+c1_overall = pd.read_csv(c1_overall_path)
+all_vars = ['days', 'ACTV', 'TEMP', 'HUM', 'WSPD', 'PRES', 'NO2', 'O3', 'PM2.5', 'PM10', 'SO2', 'CO', 'Casecluster1_df = c1_overall[all_vars]
+# Normalize the data
+scaler = MinMaxScaler()
+normalized = scaler.fit_transform(cluster1_df.values)
+cluster1_df_norm = pd.DataFrame(normalized)
+cluster1_df_norm.columns = cluster1_df.columns
+cluster1_df_norm.head()
+# ATE refutation
+treatments = ['PRES', 'TEMP', 'HUM', 'WSPD', 'NO2', 'O3', 'PM2.5', 'PM10', 'SO2', 'CO']
+curr_treatments = []
+#est_linear2 = []
+#ate_forest2 = []
+for treatment in treatments:
+try:
+est_ols, ref_ols = ate_estimate_refutation(treatment=treatment, data=cluster1_df_norm, outcome='causal_graph=causal_graph, model_type='linear', refutation_type='RCC')
+# est_forest, ref_forest = ate_estimate_refutation(treatment=treatment, data=cluster1_df_norm, outcome=# causal_graph=causal_graph, model_type='nonlinear', refutation_type='RCC10
+print(f'Treatment: {treatment}')
+print('-----------------------------')
+# print(f'OLS Treatment Effect: {est_ols}')
+print(f'OLS RCC Treatment Effect: {ref_ols}')
+# print(f'Forest Treatment Effect: {est_forest}')
+# print(f'Forest RCC Treatment Effect: {ref_forest}')
+except Exception as e:
+print(e)
+continue
+# ATE refutation
+treatments = ['PRES', 'TEMP', 'HUM', 'WSPD', 'NO2', 'O3', 'PM2.5', 'PM10', 'SO2', 'CO']
+curr_treatments = []
+#est_linear2 = []
+#ate_forest2 = []
+for treatment in treatments:
+try:
+est_ols, ref_ols = ate_estimate_refutation(treatment=treatment, data=cluster1_df_norm, outcome='causal_graph=causal_graph, model_type='linear', refutation_type='PT')
+# est_forest, ref_forest = ate_estimate_refutation(treatment=treatment, data=cluster1_df_norm, outcome=# causal_graph=causal_graph, model_type='nonlinear', refutation_type='RCCprint(f'Treatment: {treatment}')
+print('-----------------------------')
+# print(f'OLS Treatment Effect: {est_ols}')
+print(f'OLS RCC Treatment Effect: {ref_ols}')
+# print(f'Forest Treatment Effect: {est_forest}')
+# print(f'Forest RCC Treatment Effect: {ref_forest}')
+except Exception as e:
+print(e)
+continue
+# Load the data and train the XGBoost models
+root = os.path.dirname(os.getcwd())
+data_dir = os.path.join(root, 'data')
+11
+### Cluster 1 Overall ###
+c1_overall_path = os.path.join(data_dir, 'time_cluster_1_postpeak.csv')
+c1_overall = pd.read_csv(c1_overall_path)
+all_vars = ['days', 'ACTV', 'TEMP', 'HUM', 'WSPD', 'PRES', 'NO2', 'O3', 'PM2.5', 'PM10', 'SO2', 'CO', 'Casecluster1_df = c1_overall[all_vars]
+# Normalize the data
+scaler = MinMaxScaler()
+normalized = scaler.fit_transform(cluster1_df.values)
+cluster1_df_norm = pd.DataFrame(normalized)
+cluster1_df_norm.columns = cluster1_df.columns
+cluster1_df_norm.head()
+# ATE refutation
+treatments = ['PRES', 'TEMP', 'HUM', 'WSPD', 'NO2', 'O3', 'PM2.5', 'PM10', 'SO2', 'CO']
+curr_treatments = []
+#est_linear2 = []
+#ate_forest2 = []
+for treatment in treatments:
+try:
+est_ols, ref_ols = ate_estimate_refutation(treatment=treatment, data=cluster1_df_norm, outcome='causal_graph=causal_graph, model_type='linear', refutation_type='RCC')
+# est_forest, ref_forest = ate_estimate_refutation(treatment=treatment, data=cluster1_df_norm, outcome=# causal_graph=causal_graph, model_type='nonlinear', refutation_type='RCCprint(f'Treatment: {treatment}')
+print('-----------------------------')
+# print(f'OLS Treatment Effect: {est_ols}')
+print(f'OLS RCC Treatment Effect: {ref_ols}')
+# print(f'Forest Treatment Effect: {est_forest}')
+# print(f'Forest RCC Treatment Effect: {ref_forest}')
+except Exception as e:
+print(e)
+continue
+# ATE refutation
+12
+treatments = ['PRES', 'TEMP', 'HUM', 'WSPD', 'NO2', 'O3', 'PM2.5', 'PM10', 'SO2', 'CO']
+curr_treatments = []
+#est_linear2 = []
+#ate_forest2 = []
+for treatment in treatments:
+try:
+est_ols, ref_ols = ate_estimate_refutation(treatment=treatment, data=cluster1_df_norm, outcome='causal_graph=causal_graph, model_type='linear', refutation_type='PT')
+# est_forest, ref_forest = ate_estimate_refutation(treatment=treatment, data=cluster1_df_norm, outcome=# causal_graph=causal_graph, model_type='nonlinear', refutation_type='RCCprint(f'Treatment: {treatment}')
+print('-----------------------------')
+# print(f'OLS Treatment Effect: {est_ols}')
+print(f'OLS RCC Treatment Effect: {ref_ols}')
+# print(f'Forest Treatment Effect: {est_forest}')
+# print(f'Forest RCC Treatment Effect: {ref_forest}')
+except Exception as e:
+print(e)
+continue
+# Load the data and train the XGBoost models
+root = os.path.dirname(os.getcwd())
+data_dir = os.path.join(root, 'data')
+### Cluster 1 Overall ###
+c1_overall_path = os.path.join(data_dir, 'time_cluster_2.csv')
+c1_overall = pd.read_csv(c1_overall_path)
+all_vars = ['days', 'ACTV', 'TEMP', 'HUM', 'WSPD', 'PRES', 'NO2', 'O3', 'PM2.5', 'PM10', 'SO2', 'CO', 'Casecluster1_df = c1_overall[all_vars]
+# Normalize the data
+scaler = MinMaxScaler()
+normalized = scaler.fit_transform(cluster1_df.values)
+cluster1_df_norm = pd.DataFrame(normalized)
+cluster1_df_norm.columns = cluster1_df.columns
+13
+cluster1_df_norm.head()
+# ATE refutation
+treatments = ['PRES', 'TEMP', 'HUM', 'WSPD', 'NO2', 'O3', 'PM2.5', 'PM10', 'SO2', 'CO']
+curr_treatments = []
+#est_linear2 = []
+#ate_forest2 = []
+for treatment in treatments:
+try:
+est_ols, ref_ols = ate_estimate_refutation(treatment=treatment, data=cluster1_df_norm, outcome='causal_graph=causal_graph, model_type='linear', refutation_type='RCC')
+# est_forest, ref_forest = ate_estimate_refutation(treatment=treatment, data=cluster1_df_norm, outcome=# causal_graph=causal_graph, model_type='nonlinear', refutation_type='RCCprint(f'Treatment: {treatment}')
+print('-----------------------------')
+# print(f'OLS Treatment Effect: {est_ols}')
+print(f'OLS RCC Treatment Effect: {ref_ols}')
+# print(f'Forest Treatment Effect: {est_forest}')
+# print(f'Forest RCC Treatment Effect: {ref_forest}')
+except Exception as e:
+print(e)
+continue
+# ATE refutation
+treatments = ['PRES', 'TEMP', 'HUM', 'WSPD', 'NO2', 'O3', 'PM2.5', 'PM10', 'SO2', 'CO']
+curr_treatments = []
+#est_linear2 = []
+#ate_forest2 = []
+for treatment in treatments:
+try:
+est_ols, ref_ols = ate_estimate_refutation(treatment=treatment, data=cluster1_df_norm, outcome='causal_graph=causal_graph, model_type='linear', refutation_type='PT')
+# est_forest, ref_forest = ate_estimate_refutation(treatment=treatment, data=cluster1_df_norm, outcome=# causal_graph=causal_graph, model_type='nonlinear', refutation_type='RCC14
+print(f'Treatment: {treatment}')
+print('-----------------------------')
+# print(f'OLS Treatment Effect: {est_ols}')
+print(f'OLS RCC Treatment Effect: {ref_ols}')
+# print(f'Forest Treatment Effect: {est_forest}')
+# print(f'Forest RCC Treatment Effect: {ref_forest}')
+except Exception as e:
+print(e)
+continue
+# Load the data and train the XGBoost models
+root = os.path.dirname(os.getcwd())
+data_dir = os.path.join(root, 'data')
+### Cluster 1 Overall ###
+c1_overall_path = os.path.join(data_dir, 'time_cluster_2_spread.csv')
+c1_overall = pd.read_csv(c1_overall_path)
+all_vars = ['days', 'ACTV', 'TEMP', 'HUM', 'WSPD', 'PRES', 'NO2', 'O3', 'PM2.5', 'PM10', 'SO2', 'CO', 'Casecluster1_df = c1_overall[all_vars]
+# Normalize the data
+scaler = MinMaxScaler()
+normalized = scaler.fit_transform(cluster1_df.values)
+cluster1_df_norm = pd.DataFrame(normalized)
+cluster1_df_norm.columns = cluster1_df.columns
+cluster1_df_norm.head()
+# ATE refutation
+treatments = ['PRES', 'TEMP', 'HUM', 'WSPD', 'NO2', 'O3', 'PM2.5', 'PM10', 'SO2', 'CO']
+curr_treatments = []
+#est_linear2 = []
+#ate_forest2 = []
+for treatment in treatments:
+try:
+est_ols, ref_ols = ate_estimate_refutation(treatment=treatment, data=cluster1_df_norm, outcome='causal_graph=causal_graph, model_type='linear', refutation_type='RCC')
+15
+# est_forest, ref_forest = ate_estimate_refutation(treatment=treatment, data=cluster1_df_norm, outcome=# causal_graph=causal_graph, model_type='nonlinear', refutation_type='RCCprint(f'Treatment: {treatment}')
+print('-----------------------------')
+# print(f'OLS Treatment Effect: {est_ols}')
+print(f'OLS RCC Treatment Effect: {ref_ols}')
+# print(f'Forest Treatment Effect: {est_forest}')
+# print(f'Forest RCC Treatment Effect: {ref_forest}')
+except Exception as e:
+print(e)
+continue
+# ATE refutation
+treatments = ['PRES', 'TEMP', 'HUM', 'WSPD', 'NO2', 'O3', 'PM2.5', 'PM10', 'SO2', 'CO']
+curr_treatments = []
+#est_linear2 = []
+#ate_forest2 = []
+for treatment in treatments:
+try:
+est_ols, ref_ols = ate_estimate_refutation(treatment=treatment, data=cluster1_df_norm, outcome='causal_graph=causal_graph, model_type='linear', refutation_type='PT')
+# est_forest, ref_forest = ate_estimate_refutation(treatment=treatment, data=cluster1_df_norm, outcome=# causal_graph=causal_graph, model_type='nonlinear', refutation_type='RCCprint(f'Treatment: {treatment}')
+print('-----------------------------')
+# print(f'OLS Treatment Effect: {est_ols}')
+print(f'OLS RCC Treatment Effect: {ref_ols}')
+# print(f'Forest Treatment Effect: {est_forest}')
+# print(f'Forest RCC Treatment Effect: {ref_forest}')
+except Exception as e:
+print(e)
+continue
+# Load the data and train the XGBoost models
+16
+root = os.path.dirname(os.getcwd())
+data_dir = os.path.join(root, 'data')
+### Cluster 1 Overall ###
+c1_overall_path = os.path.join(data_dir, 'time_cluster_2_postpeak.csv')
+c1_overall = pd.read_csv(c1_overall_path)
+all_vars = ['days', 'ACTV', 'TEMP', 'HUM', 'WSPD', 'PRES', 'NO2', 'O3', 'PM2.5', 'PM10', 'SO2', 'CO', 'Casecluster1_df = c1_overall[all_vars]
+# Normalize the data
+scaler = MinMaxScaler()
+normalized = scaler.fit_transform(cluster1_df.values)
+cluster1_df_norm = pd.DataFrame(normalized)
+cluster1_df_norm.columns = cluster1_df.columns
+cluster1_df_norm.head()
+# ATE refutation
+treatments = ['PRES', 'TEMP', 'HUM', 'WSPD', 'NO2', 'O3', 'PM2.5', 'PM10', 'SO2', 'CO']
+curr_treatments = []
+#est_linear2 = []
+#ate_forest2 = []
+for treatment in treatments:
+try:
+est_ols, ref_ols = ate_estimate_refutation(treatment=treatment, data=cluster1_df_norm, outcome='causal_graph=causal_graph, model_type='linear', refutation_type='PT')
+# est_forest, ref_forest = ate_estimate_refutation(treatment=treatment, data=cluster1_df_norm, outcome=# causal_graph=causal_graph, model_type='nonlinear', refutation_type='RCCprint(f'Treatment: {treatment}')
+print('-----------------------------')
+# print(f'OLS Treatment Effect: {est_ols}')
+print(f'OLS RCC Treatment Effect: {ref_ols}')
+# print(f'Forest Treatment Effect: {est_forest}')
+# print(f'Forest RCC Treatment Effect: {ref_forest}')
+except Exception as e:
+print(e)
+17
+continue
+# ATE refutation
+treatments = ['PRES', 'TEMP', 'HUM', 'WSPD', 'NO2', 'O3', 'PM2.5', 'PM10', 'SO2', 'CO']
+curr_treatments = []
+#est_linear2 = []
+#ate_forest2 = []
+for treatment in treatments:
+try:
+est_ols, ref_ols = ate_estimate_refutation(treatment=treatment, data=cluster1_df_norm, outcome='causal_graph=causal_graph, model_type='linear', refutation_type='RCC')
+# est_forest, ref_forest = ate_estimate_refutation(treatment=treatment, data=cluster1_df_norm, outcome=# causal_graph=causal_graph, model_type='nonlinear', refutation_type='RCCprint(f'Treatment: {treatment}')
+print('-----------------------------')
+# print(f'OLS Treatment Effect: {est_ols}')
+print(f'OLS RCC Treatment Effect: {ref_ols}')
+# print(f'Forest Treatment Effect: {est_forest}')
+# print(f'Forest RCC Treatment Effect: {ref_forest}')
+except Exception as e:
+print(e)
+continue
+# ATE refutation
+treatments = ['PRES', 'TEMP', 'HUM', 'WSPD', 'NO2', 'O3', 'PM2.5', 'PM10', 'SO2', 'CO']
+curr_treatments = []
+#est_linear2 = []
+#ate_forest2 = []
+for treatment in treatments:
+try:
+est_ols, ref_ols = ate_estimate_refutation(treatment=treatment, data=cluster1_df_norm, outcome='causal_graph=causal_graph, model_type='linear', refutation_type='PT')
+# est_forest, ref_forest = ate_estimate_refutation(treatment=treatment, data=cluster1_df_norm, outcome=# causal_graph=causal_graph, model_type='nonlinear', refutation_type='RCC18
+print(f'Treatment: {treatment}')
+print('-----------------------------')
+# print(f'OLS Treatment Effect: {est_ols}')
+print(f'OLS RCC Treatment Effect: {ref_ols}')
+# print(f'Forest Treatment Effect: {est_forest}')
+# print(f'Forest RCC Treatment Effect: {ref_forest}')
+except Exception as e:
+print(e)
+continue
+```
+
+
+Alternative Methods of Analysis
+
+``` {r, eval = FALSE}
+
+# Reading the data and synthesizing the data
+
+cleaned = read.csv("~/Documents/UC BERKELEY/STATISTICS/STAT 156/Final Project/GitHub/EnvCausal-replication/data/cleaned_data.csv") 
+
+all_dat = read.csv("~/Documents/UC BERKELEY/STATISTICS/STAT 156/Final Project/GitHub/EnvCausal-replication/data/all_dat_cleaned.csv") 
+
+cleaned$City = as.character(cleaned$City)
+all_dat$City = as.character(all_dat$City)
+
+cleaned$City[111] = "Suzhou_1"
+all_dat$City[6085:6162] = "Suzhou_1"
+cleaned$City[98] = "Taizhou_1"
+all_dat$City[6787:6864] = "Taizhou_1"
+cleaned$City[41] = "Lvliang"
+cleaned$City[103] = "Bangbu"
+all_dat$City[7723:7800] = "Chaoyang"
+cleaned = cleaned[-79, ]
+cleaned = cleaned[-67, ]
+
+for(i in 1:164){
+all_dat[all_dat$City == cleaned$City[i], ]$PRPER = cleaned$Prim.[i]/100
+all_dat[all_dat$City == cleaned$City[i], ]$SECPER = cleaned$Sec.[i]/100
+all_dat[all_dat$City == cleaned$City[i], ]$TERPEC = cleaned$Tert.[i]/100
+}
+```
+
+```{r, echo = FALSE, eval = FALSE}
+# Running multivariate linear regressions and creating a table for it
+results1 = lm(Case ~ TEMP + pop + GDP + PRIM + SEC  + A60 + BED + DOC + NRS + 
+                AREA + POPDEN + GDPPC + PRPER + SECPER + ACTV , dat = all_dat)
+summary(results1)$coeff[2, 4]
+
+results2 = lm(Case ~ WSPD + pop + GDP + PRIM + SEC  + A60 + BED + DOC + NRS + 
+                AREA + POPDEN + GDPPC + PRPER + SECPER + ACTV , dat = all_dat)
+summary(results2)$coeff[2, 4]
+
+results3 = lm(Case ~ PRES + pop + GDP + PRIM + SEC  + A60 + BED + DOC + NRS + 
+                AREA + POPDEN + GDPPC + PRPER + SECPER + ACTV , dat = all_dat)
+summary(results3)$coeff[2, 4]
+
+results4 = lm(Case ~ HUM + pop + GDP + PRIM + SEC  + A60 + BED + DOC + NRS + 
+                AREA + POPDEN + GDPPC + PRPER + SECPER + ACTV , dat = all_dat)
+summary(results4)$coeff[2, 4]
+
+results5 = lm(Case ~ O3 + pop + GDP + PRIM + SEC  + A60 + BED + DOC + NRS + 
+                AREA + POPDEN + GDPPC + PRPER + SECPER + ACTV , dat = all_dat)
+summary(results5)$coeff[2, 4]
+
+results6 = lm(Case ~ NO2 + pop + GDP + PRIM + SEC  + A60 + BED + DOC + NRS + 
+                AREA + POPDEN + GDPPC + PRPER + SECPER + ACTV , dat = all_dat)
+summary(results6)$coeff[2, 4]
+
+results7 = lm(Case ~ CO + pop + GDP + PRIM + SEC  + A60 + BED + DOC + NRS + 
+                AREA + POPDEN + GDPPC + PRPER + SECPER + ACTV , dat = all_dat)
+summary(results7)$coeff[2, 4]
+
+results8 = lm(Case ~ SO2 + pop + GDP + PRIM + SEC  + A60 + BED + DOC + NRS + 
+                AREA + POPDEN + GDPPC + PRPER + SECPER + ACTV , dat = all_dat)
+summary(results8)$coeff[2, 4]
+
+results9 = lm(Case ~ PM2.5 + pop + GDP + PRIM + SEC  + A60 + BED + DOC + NRS + 
+                AREA + POPDEN + GDPPC + PRPER + SECPER + ACTV , dat = all_dat)
+summary(results9)$coeff[2, 4]
+
+results10 = lm(Case ~ PM10 + pop + GDP + PRIM + SEC  + A60 + BED + DOC + NRS + 
+                AREA + POPDEN + GDPPC + PRPER + SECPER + ACTV , dat = all_dat)
+summary(results10)$coeff[2, 4]
+
+results100 = lm(Case ~ TEMP + WSPD + PRES+ HUM + O3+ NO2 + CO + SO2 + PM2.5 + PM10 + pop + GDP + PRIM + SEC  + A60 + BED + DOC + NRS + 
+                AREA + POPDEN + GDPPC + PRPER + SECPER + ACTV , dat = all_dat)
+summary(results100)$coeff[2, 4]
+
+table1 = stargazer(results1, results2, results3, 
+          results4, results5, results6, results7, results8, results9, results10, results100,
+          digits = 3,
+          header = FALSE,
+          type = "latex", 
+          title = "Estimation of Environmental Impact on COVID Cases- Simple Multivariate Regression Model",
+          model.numbers = FALSE,
+          column.labels = c("(1)", "(2)", "(3)", "(4)", "(5)", "(6)", "(7)", "(8)", "(9)", "(10)", "(11)"))
+```
+
+
+
+``` {r, eval = FALSE}
+
+# Running multivatiate regressions with interaction and creating a summary table
+
+results11 = lm(Case ~ TEMP + pop + GDP + PRIM + SEC  + A60 + BED + DOC + NRS + 
+                AREA + POPDEN + GDPPC + PRPER + SECPER + ACTV + TEMP*pop + 
+                 TEMP*GDP + TEMP*PRIM + TEMP*SEC + TEMP*A60 + TEMP*BED + TEMP*DOC + 
+                 TEMP*NRS + TEMP*AREA + TEMP*POPDEN + TEMP*GDPPC + TEMP*PRPER + 
+                 TEMP*SECPER + TEMP*ACTV  , dat = all_dat)
+
+results12 = lm(Case ~ WSPD + pop + GDP + PRIM + SEC  + A60 + BED + DOC + NRS + 
+                AREA + POPDEN + GDPPC + PRPER + SECPER + ACTV + 
+                 WSPD*pop + WSPD*GDP + WSPD*PRIM + WSPD*SEC + WSPD*A60 + 
+                 WSPD*BED + WSPD*DOC + WSPD*NRS + WSPD*AREA + WSPD*POPDEN + 
+                 WSPD*GDPPC + WSPD*PRPER + WSPD*SECPER + WSPD*ACTV , dat = all_dat)
+
+results13 = lm(Case ~ PRES + pop + GDP + PRIM + SEC + A60 + BED + DOC + NRS +
+                 AREA + POPDEN + GDPPC + PRPER + SECPER  + ACTV + 
+                 PRES*pop + PRES*GDP + PRES*PRIM + PRES*SEC + PRES*A60 + PRES*BED + 
+                 PRES*DOC + PRES*NRS + PRES*AREA + PRES*POPDEN + PRES*GDPPC + 
+                 PRES*PRPER + PRES*SECPER + PRES*ACTV, dat = all_dat)
+
+results14 = lm(Case ~ HUM + pop + GDP + PRIM + SEC + A60 + BED + DOC + NRS + 
+                 AREA + POPDEN + GDPPC + PRPER + SECPER  + ACTV + 
+                 HUM*pop + HUM*GDP + HUM*PRIM + HUM*SEC + HUM*A60 + HUM*BED + 
+                 HUM*DOC + HUM*NRS + HUM*AREA + HUM*POPDEN + HUM*GDPPC + 
+                 HUM*PRPER + HUM*SECPER  + HUM*ACTV , dat = all_dat)
+
+results15 = lm(Case ~ O3 + pop + GDP + PRIM + SEC + A60 + BED + DOC + NRS + 
+                 AREA + POPDEN + GDPPC + PRPER + SECPER  + ACTV + 
+                 O3*pop + O3*GDP + O3*PRIM + O3*SEC + O3*A60 + O3*BED + 
+                 O3*DOC + O3*NRS + O3*AREA + O3*POPDEN + O3*GDPPC + O3*PRPER + 
+                 O3*SECPER+ O3*ACTV , dat = all_dat)
+
+results16 = lm(Case ~ NO2 + pop + GDP + PRIM + SEC + A60 + BED + DOC + NRS + 
+                 AREA + POPDEN + GDPPC + PRPER + SECPER  + ACTV + 
+                 NO2*pop + NO2*GDP + NO2*PRIM + NO2*SEC + NO2*A60 + NO2*BED + 
+                 NO2*DOC + NO2*NRS + NO2*AREA + NO2*POPDEN + NO2*GDPPC + 
+                 NO2*PRPER + NO2*SECPER + NO2*ACTV , dat = all_dat)
+
+results17 = lm(Case ~ CO + pop + GDP + PRIM + SEC + A60 + BED + DOC + NRS + 
+                 AREA + POPDEN + GDPPC + PRPER + SECPER  + ACTV + 
+                 CO*pop + CO*GDP + CO*PRIM + CO*SEC + CO*A60 + CO*BED + 
+                 CO*DOC + CO*NRS + CO*AREA + CO*POPDEN + CO*GDPPC + 
+                 CO*PRPER + CO*SECPER + CO*ACTV , dat = all_dat)
+
+results18 = lm(Case ~ SO2 + pop + GDP + PRIM + SEC + A60 + BED + DOC + 
+                 NRS + AREA + POPDEN + GDPPC + PRPER + SECPER  + 
+                 ACTV + SO2*pop + SO2*GDP + SO2*PRIM + SO2*SEC + SO2*A60 + 
+                 SO2*BED + SO2*DOC + SO2*NRS + SO2*AREA + SO2*POPDEN + 
+                 SO2*GDPPC + SO2*PRPER + SO2*SECPER + SO2*ACTV , dat = all_dat)
+
+results19 = lm(Case ~ PM2.5 + pop + GDP + PRIM + SEC + A60 + BED + DOC + 
+                 NRS + AREA + POPDEN + GDPPC + PRPER + SECPER  + 
+                 ACTV+ PM2.5*pop + PM2.5*GDP + PM2.5*PRIM + PM2.5*SEC + 
+                 PM2.5*A60 + PM2.5*BED + PM2.5*DOC + PM2.5*NRS + PM2.5*AREA + 
+                 PM2.5*POPDEN + PM2.5*GDPPC + PM2.5*PRPER + PM2.5*SECPER 
+                  + PM2.5*ACTV, dat = all_dat)
+
+results20 = lm(Case ~ PM10 + pop + GDP + PRIM + SEC + A60 + BED + DOC + NRS +
+                 AREA + POPDEN + GDPPC + PRPER + SECPER  + ACTV + 
+                 PM10*pop + PM10*GDP + PM10*PRIM + PM10*SEC + PM10*A60 + 
+                 PM10*BED + PM10*DOC + PM10*NRS + PM10*AREA + PM10*POPDEN + 
+                 PM10*GDPPC + PM10*PRPER + PM10*SECPER + PM10*ACTV, dat = all_dat)
+
+table2 = stargazer(results11, results12, results13, 
+          results14, results15, results16, results17, results18, results19, results20,
+          digits = 3,
+          header = FALSE,
+          type = "latex", 
+          title = "Estimation of Environmental Impact on COVID Cases- Multivariate Regression Model with Interaction",
+          model.numbers = FALSE,
+          column.labels = c("(1)", "(2)", "(3)", "(4)", "(5)", "(6)", "(7)", "(8)", "(9)", "(10)"))
+```
+
+
+```{r, echo = FALSE, eval = FALSE}
+
+# Running multivaraite regressions with interactions,
+# while treating some of the environmental factors as covariates
+results111 = lm(Case ~ TEMP + WSPD + PRES + HUM + O3 + NO2 + CO + SO2 + PM2.5 + PM10 +
+  TEMP*WSPD + TEMP*PRES + TEMP*HUM + TEMP*O3 + TEMP*NO2 + TEMP*CO + TEMP*SO2 + TEMP*PM2.5 + TEMP*PM10 +
+  pop + GDP + PRIM + SEC  + A60 + BED + DOC + NRS + 
+  AREA + POPDEN + GDPPC + PRPER + SECPER + ACTV + TEMP*pop + 
+  TEMP*GDP + TEMP*PRIM + TEMP*SEC + TEMP*A60 + TEMP*BED + TEMP*DOC + 
+  TEMP*NRS + TEMP*AREA + TEMP*POPDEN + TEMP*GDPPC + TEMP*PRPER + 
+  TEMP*SECPER + TEMP*ACTV  , dat = all_dat)
+
+results112 = lm(Case ~ TEMP + WSPD + PRES + HUM + O3 + NO2 + CO + SO2 + PM2.5 + PM10 +
+  WSPD*TEMP + WSPD*PRES + WSPD*HUM + WSPD*O3 + WSPD*NO2 + WSPD*CO + WSPD*SO2 + WSPD*PM2.5 + WSPD*PM10 +
+  pop + GDP + PRIM + SEC  + A60 + BED + DOC + NRS + 
+  AREA + POPDEN + GDPPC + PRPER + SECPER + ACTV + WSPD*pop + 
+  WSPD*GDP + WSPD*PRIM + WSPD*SEC + WSPD*A60 + WSPD*BED + WSPD*DOC + 
+  WSPD*NRS + WSPD*AREA + WSPD*POPDEN + WSPD*GDPPC + WSPD*PRPER + 
+  WSPD*SECPER + WSPD*ACTV , dat = all_dat)
+
+results113 = lm(Case ~ TEMP + WSPD + PRES + HUM + O3 + NO2 + CO + SO2 + PM2.5 + PM10 +
+  PRES*TEMP + PRES*WSPD + PRES*HUM + PRES*O3 + PRES*NO2 + PRES*CO + PRES*SO2 + PRES*PM2.5 + PRES*PM10 +
+  pop + GDP + PRIM + SEC  + A60 + BED + DOC + NRS + 
+  AREA + POPDEN + GDPPC + PRPER + SECPER + ACTV + PRES*pop + 
+  PRES*GDP + PRES*PRIM + PRES*SEC + PRES*A60 + PRES*BED + PRES*DOC + 
+  PRES*NRS + PRES*AREA + PRES*POPDEN + PRES*GDPPC + PRES*PRPER + 
+  PRES*SECPER + PRES*ACTV, dat = all_dat)
+
+results114 = lm(Case ~ TEMP + WSPD + PRES + HUM + O3 + NO2 + CO + SO2 + PM2.5 + PM10 +
+  HUM*TEMP + HUM*WSPD + HUM*PRES + HUM*O3 + HUM*NO2 + HUM*CO + HUM*SO2 + HUM*PM2.5 + HUM*PM10 +
+  pop + GDP + PRIM + SEC  + A60 + BED + DOC + NRS + 
+  AREA + POPDEN + GDPPC + PRPER + SECPER + ACTV + HUM*pop + 
+  HUM*GDP + HUM*PRIM + HUM*SEC + HUM*A60 + HUM*BED + HUM*DOC + 
+  HUM*NRS + HUM*AREA + HUM*POPDEN + HUM*GDPPC + HUM*PRPER + 
+  HUM*SECPER + HUM*ACTV , dat = all_dat)
+
+results115 = lm(Case ~ TEMP + WSPD + PRES + HUM + O3 + NO2 + CO + SO2 + PM2.5 + PM10 +
+  O3*TEMP + O3*WSPD + O3*PRES + O3*HUM + O3*NO2 + O3*CO + O3*SO2 + O3*PM2.5 + O3*PM10 +
+  pop + GDP + PRIM + SEC  + A60 + BED + DOC + NRS + 
+  AREA + POPDEN + GDPPC + PRPER + SECPER + ACTV + O3*pop + 
+  O3*GDP + O3*PRIM + O3*SEC + O3*A60 + O3*BED + O3*DOC + 
+  O3*NRS + O3*AREA + O3*POPDEN + O3*GDPPC + O3*PRPER + 
+  O3*SECPER + O3*ACTV , dat = all_dat)
+
+results116 = lm(Case ~ TEMP + WSPD + PRES + HUM + O3 + NO2 + CO + SO2 + PM2.5 + PM10 +
+  NO2*TEMP + NO2*WSPD + NO2*PRES + NO2*HUM + NO2*O3 + NO2*CO + NO2*SO2 + NO2*PM2.5 + NO2*PM10 +
+  pop + GDP + PRIM + SEC  + A60 + BED + DOC + NRS + 
+  AREA + POPDEN + GDPPC + PRPER + SECPER + ACTV + NO2*pop + 
+  NO2*GDP + NO2*PRIM + NO2*SEC + NO2*A60 + NO2*BED + NO2*DOC + 
+  NO2*NRS + NO2*AREA + NO2*POPDEN + NO2*GDPPC + NO2*PRPER + 
+  NO2*SECPER + NO2*ACTV, dat = all_dat)
+
+results117 = lm(Case ~ TEMP + WSPD + PRES + HUM + O3 + NO2 + CO + SO2 + PM2.5 + PM10 +
+  CO*TEMP + CO*WSPD + CO*PRES + CO*HUM + CO*O3 + CO*NO2 + CO*SO2 + CO*PM2.5 + CO*PM10 +
+  pop + GDP + PRIM + SEC  + A60 + BED + DOC + NRS + 
+  AREA + POPDEN + GDPPC + PRPER + SECPER + ACTV + CO*pop + 
+  CO*GDP + CO*PRIM + CO*SEC + CO*A60 + CO*BED + CO*DOC + 
+  CO*NRS + CO*AREA + CO*POPDEN + CO*GDPPC + CO*PRPER + 
+  CO*SECPER + CO*ACTV , dat = all_dat)
+
+results118 = lm(Case ~ TEMP + WSPD + PRES + HUM + O3 + NO2 + CO + SO2 + PM2.5 + PM10 +
+  SO2*TEMP + SO2*WSPD + SO2*PRES + SO2*HUM + SO2*O3 + SO2*NO2 + SO2*CO + SO2*PM2.5 + SO2*PM10 +
+  pop + GDP + PRIM + SEC  + A60 + BED + DOC + NRS + 
+  AREA + POPDEN + GDPPC + PRPER + SECPER + ACTV + SO2*pop + 
+  SO2*GDP + SO2*PRIM + SO2*SEC + SO2*A60 + SO2*BED + SO2*DOC + 
+  SO2*NRS + SO2*AREA + SO2*POPDEN + SO2*GDPPC + SO2*PRPER + 
+  SO2*SECPER + SO2*ACTV , dat = all_dat)
+
+results119 = lm(Case ~ TEMP + WSPD + PRES + HUM + O3 + NO2 + CO + SO2 + PM2.5 + PM10 +
+  PM2.5*TEMP + PM2.5*WSPD + PM2.5*PRES + PM2.5*HUM + PM2.5*O3 + PM2.5*NO2 + PM2.5*CO + PM2.5*SO2 + PM2.5*PM10 +
+  pop + GDP + PRIM + SEC  + A60 + BED + DOC + NRS + 
+  AREA + POPDEN + GDPPC + PRPER + SECPER + ACTV + PM2.5*pop + 
+  PM2.5*GDP + PM2.5*PRIM + PM2.5*SEC + PM2.5*A60 + PM2.5*BED + PM2.5*DOC + 
+  PM2.5*NRS + PM2.5*AREA + PM2.5*POPDEN + PM2.5*GDPPC + PM2.5*PRPER + 
+  PM2.5*SECPER + PM2.5*ACTV, dat = all_dat)
+
+results120 = lm(Case ~ TEMP + WSPD + PRES + HUM + O3 + NO2 + CO + SO2 + PM2.5 + PM10 +
+  PM10*TEMP + PM10*WSPD + PM10*PRES + PM10*HUM + PM10*O3 + PM10*NO2 + PM10*CO + PM10*SO2 + PM10*PM2.5 +
+  pop + GDP + PRIM + SEC  + A60 + BED + DOC + NRS + 
+  AREA + POPDEN + GDPPC + PRPER + SECPER + ACTV + PM10*pop + 
+  PM10*GDP + PM10*PRIM + PM10*SEC + PM10*A60 + PM10*BED + PM10*DOC + 
+  PM10*NRS + PM10*AREA + PM10*POPDEN + PM10*GDPPC + PM10*PRPER + 
+  PM10*SECPER + PM10*ACTV, dat = all_dat)
+
+table3 = stargazer(results111, results112, results113, 
+          results114, results115, results116, results117, results118, results119, results120,
+          digits = 3,
+          header = FALSE,
+          type = "latex", 
+          title = "Estimation of Environmental Impact on COVID Cases- Multivariate Regression Model with Interaction, with other Environmental Factors as Covariates",
+          model.numbers = FALSE,
+          column.labels = c("(TEMP)", "(WSPD)", "(PRES)", "(HUM)", "(O3)", "(NO2)", "(CO)", "(SO2)", "(PM2.5)", "(PM10)"))
+```
+
+
+``` {r, eval = FALSE}
+
+
+# Time fixed effects regressions
+
+results21 = plm(Case ~ TEMP + pop + GDP + PRIM + SEC + A60 + BED + DOC + NRS + 
+                  AREA + POPDEN + GDPPC + PRPER + SECPER  + ACTV , 
+                data = all_dat, model = "within", index = c("City"))
+
+results22 = plm(Case ~ WSPD + pop + GDP + PRIM + SEC + A60 + BED + DOC + NRS +
+                  AREA + POPDEN + GDPPC + PRPER + SECPER  + ACTV , 
+                data = all_dat, model = "within", index = c("City"))
+
+results23 = plm(Case ~ PRES + pop + GDP + PRIM + SEC + A60 + BED + DOC + NRS + 
+                  AREA + POPDEN + GDPPC + PRPER + SECPER  + ACTV , 
+                data = all_dat, model = "within", index = c("City"))
+
+results24 = plm(Case ~ HUM + pop + GDP + PRIM + SEC + A60 + BED + DOC + NRS + 
+                  AREA + POPDEN + GDPPC + PRPER + SECPER  + ACTV , 
+                data = all_dat, model = "within", index = c("City"))
+
+results25 = plm(Case ~ O3 + pop + GDP + PRIM + SEC + A60 + BED + DOC + NRS +
+                  AREA + POPDEN + GDPPC + PRPER + SECPER  + ACTV , 
+                data = all_dat, model = "within", index = c("City"))
+
+results26 = plm(Case ~ NO2 + pop + GDP + PRIM + SEC + A60 + BED + DOC + NRS +
+                  AREA + POPDEN + GDPPC + PRPER + SECPER  + ACTV , 
+                data = all_dat, model = "within", index = c("City"))
+
+results27 = plm(Case ~ CO + pop + GDP + PRIM + SEC + A60 + BED + DOC + NRS + 
+                  AREA + POPDEN + GDPPC + PRPER + SECPER  + ACTV , 
+                data = all_dat, model = "within", index = c("City"))
+
+results28 = plm(Case ~ SO2 + pop + GDP + PRIM + SEC + A60 + BED + DOC + NRS +
+                  AREA + POPDEN + GDPPC + PRPER + SECPER  + ACTV , 
+                data = all_dat, model = "within", index = c("City"))
+
+results29 = plm(Case ~ PM2.5 + pop + GDP + PRIM + SEC + A60 + BED + DOC + NRS + 
+                  AREA + POPDEN + GDPPC + PRPER + SECPER  + ACTV , 
+                data = all_dat, model = "within", index = c("City"))
+
+results30 = plm(Case ~ PM10 + pop + GDP + PRIM + SEC + A60 + BED + DOC + NRS +
+                  AREA + POPDEN + GDPPC + PRPER + SECPER  + ACTV , 
+                data = all_dat, model = "within", index = c("City"))
+
+table4 = stargazer(results21, results22, results23, 
+          results24, results25, results26, results27, results28, results29, results30,
+          digits = 3,
+          header = FALSE,
+          type = "latex", 
+          title = "Fixed Effects Regression Analysis",
+          model.numbers = FALSE,
+          column.labels = c("(1)", "(2)", "(3)", "(4)", "(5)", "(6)", "(7)", "(8)", "(9)", "(10)"))
+```
+
+
+``` {r, eval = FALSE}
+
+
+#Matching
+
+import pandas as pd
+import numpy as np
+
+def binarize_treatment(df, treat):
+    new_df = df.copy()
+    new_df[treat] = (df[treat] >= np.median(df[treat])).astype(int)
+    return new_df
+    
+# Libraries for data processing and math 
+import pandas as pd
+import numpy as np
+from sklearn.preprocessing import MinMaxScaler
+from binarize import binarize_treatment
+from causalinference import CausalModel
+
+# Library for file path manipulation 
+import os
+
+# Set seed to control randomness
+np.random.seed(156)
+
+# Read the data in 
+root = os.path.dirname(os.getcwd())
+data_dir = os.path.join(root, 'data')
+data_path = os.path.join(data_dir, 'all_dat_cleaned.csv')
+all_data = pd.read_csv(data_path)
+all_data.head()
+
+# One entry in each list per day, per treatment
+dates = np.unique(all_data['X'])
+treat_ate = []
+treat_ate_se = []
+
+# Define treatments and covariates
+treatments = ['PRES', 'TEMP', 'HUM', 'WSPD', 'NO2', 'O3', 'PM2.5', 'PM10', 'SO2', 'CO']
+covariates = ['ACTV', 'GDP', 'PRIM','SEC','TERT','A60','BED','DOC','NRS','AREA','POPDEN',
+              'GDPPC','PRPER','SECPER','TERPEC']
+# Compute effect estimates
+for date in np.unique(all_data['X']):
+    df_date = all_data[all_data['X'] == date]
+    for treatment in treatments:
+        df_date_treat = binarize_treatment(df_date, treatment)
+        Y = df_date_treat['Case'].values
+        D = df_date_treat[treatment].values
+        X = df_date_treat[covariates].values
+        causal = CausalModel(Y, D, X)
+        causal.est_via_matching(bias_adj=True, matches=5)
+        ate = causal.estimates['matching']['ate']
+        ate_se = causal.estimates['matching']['ate_se']
+        treat_ate.append(ate)
+        treat_ate_se.append(ate_se)
+        causal.reset()
+# Extract results into each treatment variable 
+PRES_ate = treat_ate[0::len(treatments)]
+PRES_ate_sd = treat_ate_se[0::len(treatments)]
+TEMP_ate = treat_ate[1::len(treatments)]
+TEMP_ate_sd = treat_ate_se[1::len(treatments)]
+HUM_ate = treat_ate[2::len(treatments)]
+HUM_ate_sd = treat_ate_se[2::len(treatments)]
+WSPD_ate = treat_ate[3::len(treatments)]
+WSPD_ate_sd = treat_ate_se[3::len(treatments)]
+NO2_ate = treat_ate[4::len(treatments)]
+NO2_ate_sd = treat_ate_se[4::len(treatments)]
+O3_ate = treat_ate[5::len(treatments)]
+O3_ate_sd = treat_ate_se[5::len(treatments)]
+PM25_ate = treat_ate[6::len(treatments)]
+PM25_ate_sd = treat_ate_se[6::len(treatments)]
+PM10_ate = treat_ate[7::len(treatments)]
+PM10_ate_sd = treat_ate_se[7::len(treatments)]
+SO2_ate = treat_ate[8::len(treatments)]
+SO2_ate_sd = treat_ate_se[8::len(treatments)]
+CO_ate = treat_ate[9::len(treatments)]
+CO_ate_sd = treat_ate_se[9::len(treatments)]
+# Load results into dataframe
+results_df  = pd.DataFrame({'Date':dates,
+                            'PRES':PRES_ate,
+                            'PRES SE':PRES_ate_sd,
+                            'TEMP':TEMP_ate,
+                            'TEMP SE':TEMP_ate_sd,
+                            'HUM':HUM_ate,
+                            'HUM SE':HUM_ate_sd,
+                            'WSPD':WSPD_ate,
+                            'WSPD SE':WSPD_ate_sd,
+                            'NO2':NO2_ate,
+                            'NO2 SE':NO2_ate_sd,
+                            'O3':O3_ate,
+                            'O3 SE':O3_ate_sd,
+                            'PM2.5':PM25_ate,
+                            'PM2.5 SE':PM25_ate_sd,
+                            'PM10':PM10_ate,
+                            'PM10 SE':PM10_ate_sd,
+                            'SO2':SO2_ate,
+                            'SO2 SE':SO2_ate_sd,
+                            'CO':CO_ate,
+                            'CO SE':CO_ate_sd})
+results_df.head()
+
+results_df[treatments].mean(axis=0)
+
+np.sqrt(np.mean((results_df[np.char.add(np.array(treatments), np.array([' SE']))] ** 2), axis=0))
+
+```
